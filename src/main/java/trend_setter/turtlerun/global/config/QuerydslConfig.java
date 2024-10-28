@@ -1,4 +1,4 @@
-package trend_setter.turtlerun.config;
+package trend_setter.turtlerun.global.config;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
