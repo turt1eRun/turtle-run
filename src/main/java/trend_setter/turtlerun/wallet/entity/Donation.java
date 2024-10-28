@@ -53,12 +53,11 @@ public class Donation extends BaseTimeEntity {
     private LocalDateTime processedAt;
 
     @Builder
-    public Donation(Wallet wallet, Wallet targetWallet, Content content, BigDecimal amount,
-        TransactionStatus status) {
+    public Donation(Wallet wallet, Wallet targetWallet, Content content, BigDecimal amount) {
         this.wallet = wallet;
         this.targetWallet = targetWallet;
         this.content = content;
         this.amount = amount;
-        this.status = status;
+        this.status = TransactionStatus.PENDING;
     }
 }
