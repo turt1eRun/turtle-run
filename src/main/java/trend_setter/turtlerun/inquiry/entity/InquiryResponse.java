@@ -1,12 +1,15 @@
 package trend_setter.turtlerun.inquiry.entity;
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import trend_setter.turtlerun.global.common.BaseTimeEntity;
 import trend_setter.turtlerun.user.User;
 
 @Entity
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "inquiry_responses")
 @Getter
 public class InquiryResponse extends BaseTimeEntity {
@@ -26,9 +29,6 @@ public class InquiryResponse extends BaseTimeEntity {
 
     @Column(columnDefinition = "TEXT", nullable = false)
     private String response; // 답변 내용
-
-    protected InquiryResponse() {
-    }
 
     @Builder
     public InquiryResponse(User user, Inquiry inquiry, String response) {
