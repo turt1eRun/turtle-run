@@ -39,14 +39,18 @@ public class Refund extends BaseTimeEntity {
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
+    private RefundType type;
+
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private TransactionStatus status;
 
     private LocalDateTime processedAt;
 
-    @Builder
-    public Refund(Wallet wallet, BigDecimal amount, TransactionStatus status) {
+    public Refund(Wallet wallet, BigDecimal amount, RefundType type, TransactionStatus status) {
         this.wallet = wallet;
         this.amount = amount;
+        this.type = type;
         this.status = status;
     }
 }
