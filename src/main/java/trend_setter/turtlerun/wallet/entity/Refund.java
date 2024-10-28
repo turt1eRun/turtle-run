@@ -47,10 +47,10 @@ public class Refund extends BaseTimeEntity {
 
     private LocalDateTime processedAt;
 
-    public Refund(Wallet wallet, BigDecimal amount, RefundType type, TransactionStatus status) {
+    public Refund(Wallet wallet, BigDecimal amount, RefundType type) {
         this.wallet = wallet;
         this.amount = amount;
         this.type = type;
-        this.status = status;
+        this.status = TransactionStatus.PENDING;
     }
 }

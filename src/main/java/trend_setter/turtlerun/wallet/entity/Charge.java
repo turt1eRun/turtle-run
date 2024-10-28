@@ -44,9 +44,9 @@ public class Charge extends BaseTimeEntity {
     private LocalDateTime processedAt;
 
     @Builder
-    public Charge(Wallet wallet, BigDecimal amount, TransactionStatus status) {
+    public Charge(Wallet wallet, BigDecimal amount) {
         this.wallet = wallet;
         this.amount = amount;
-        this.status = status;
+        this.status = TransactionStatus.PENDING;
     }
 }
