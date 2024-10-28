@@ -1,4 +1,4 @@
-package trend_setter.turtlerun.global.content.entity;
+package trend_setter.turtlerun.content.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

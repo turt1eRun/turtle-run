@@ -1,4 +1,4 @@
-package trend_setter.turtlerun.global.content.entity;
+package trend_setter.turtlerun.content.entity;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -17,7 +17,6 @@ import java.util.List;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.web.bind.annotation.PutMapping;
 import trend_setter.turtlerun.global.common.BaseEntity;
 
 @Entity
