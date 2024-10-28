@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import trend_setter.turtlerun.user.entity.User;
 
 @Entity
 @Getter

@@ -18,6 +18,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import trend_setter.turtlerun.global.common.BaseEntity;
+import trend_setter.turtlerun.user.entity.User;
 
 @Entity
 @Getter
