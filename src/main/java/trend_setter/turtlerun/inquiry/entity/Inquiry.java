@@ -1,12 +1,15 @@
 package trend_setter.turtlerun.inquiry.entity;
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import trend_setter.turtlerun.global.common.BaseTimeEntity;
 import trend_setter.turtlerun.user.User;
 
 @Entity
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "inquiries")
 @Getter
 public class Inquiry extends BaseTimeEntity {
@@ -29,9 +32,6 @@ public class Inquiry extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private InquiryStatus inquiryStatus = InquiryStatus.PENDING; // 상태 (PENDING, ANSWERED)
-
-    protected Inquiry() {
-    }
 
     @Builder
     public Inquiry(User user, String title, String content, InquiryStatus inquiryStatus) {
