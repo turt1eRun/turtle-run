@@ -1,5 +1,6 @@
 package trend_setter.turtlerun.inquiry.utils;
 
+import trend_setter.turtlerun.inquiry.dto.InquiryListDto;
 import trend_setter.turtlerun.inquiry.dto.InquiryWriteDto;
 import trend_setter.turtlerun.inquiry.dto.InquiryDetailDto;
 import trend_setter.turtlerun.inquiry.entity.Inquiry;
@@ -16,5 +17,14 @@ public class InquiryMapper {
     public static InquiryDetailDto toResponseDto(Inquiry inquiry) {
         return new InquiryDetailDto(inquiry.getId(), inquiry.getTitle(), inquiry.getContent(),
             inquiry.getInquiryStatus(), inquiry.getUser().getEmail());
+    }
+
+    // Inquiry 엔티티 -> InquiryListDto
+    public static InquiryListDto toInquiryListDto(Inquiry inquiry) {
+        return new InquiryListDto(
+            inquiry.getId(),
+            inquiry.getTitle(),
+            inquiry.getInquiryStatus()
+        );
     }
 }

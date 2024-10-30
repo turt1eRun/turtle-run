@@ -2,9 +2,7 @@ package trend_setter.turtlerun.inquiry.dto;
 
 import trend_setter.turtlerun.inquiry.entity.InquiryStatus;
 
-public record InquiryListDto(
+public record InquiryStatusUpdateDto(
 
-    Long id, // 문의 ID
-    String title, // 제목
-    InquiryStatus inquiryStatus // 상태
+    InquiryStatus newStatus // 변경할 상태
 ) implements InquiryDto {}
