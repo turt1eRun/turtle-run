@@ -1,4 +1,4 @@
-package trend_setter.turtlerun.content.entity;
+package trend_setter.turtlerun.content.constant;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
