@@ -13,6 +13,7 @@ import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import trend_setter.turtlerun.content.constant.VideoStatus;
 
 @Entity
 @Getter
