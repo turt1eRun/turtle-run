@@ -6,6 +6,9 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import trend_setter.turtlerun.global.common.BaseTimeEntity;
+import trend_setter.turtlerun.inquiry.dto.InquiryDto;
+import trend_setter.turtlerun.inquiry.dto.InquiryResponseDto;
+import trend_setter.turtlerun.inquiry.dto.InquiryStatusUpdateDto;
 import trend_setter.turtlerun.user.User;
 
 @Entity
@@ -39,5 +42,14 @@ public class Inquiry extends BaseTimeEntity {
         this.title = title;
         this.content = content;
         this.inquiryStatus = inquiryStatus != null ? inquiryStatus : InquiryStatus.PENDING;
+    }
+
+    // 답변 상태 수정 메서드
+    public void updateInquiryStatus(InquiryDto inquiryDto) {
+        if (inquiryDto instanceof InquiryStatusUpdateDto inquiryStatusUpdateDto) {
+            this.inquiryStatus = inquiryStatusUpdateDto.newStatus();
+        } else if (inquiryDto instanceof InquiryResponseDto inquiryResponseDto) {
+            this.inquiryStatus = InquiryStatus.ANSWERED;
+        }
     }
 }
