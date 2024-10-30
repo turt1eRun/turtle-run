@@ -15,6 +15,7 @@ import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import trend_setter.turtlerun.content.constant.BlockType;
 
 @Entity
 @Getter
@@ -22,8 +23,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "description_blocks")
 public class DescriptionBlock {
 
-    @Id
-    @Column(name = "description_block_id")
+    @Id @Column(name = "description_block_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
