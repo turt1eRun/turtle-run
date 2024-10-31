@@ -75,13 +75,12 @@ public class InquiryService {
 
     // 답글 달기
     @Transactional
-    public InquiryResponseDto createResponse(Long id, InquiryResponseDto responseDto,
-        Long adminId) {
+    public InquiryResponseDto createResponse(Long id, InquiryResponseDto responseDto) {
         Inquiry inquiry = inquiryRepository.findById(id)
             .orElseThrow(() -> new IllegalArgumentException("해당 ID의 문의를 찾을 수 없습니다: " + id));
 
-        User admin = userRepository.findById(adminId)
-            .orElseThrow(() -> new IllegalArgumentException("해당 ID의 관리자를 찾을 수 없습니다: " + adminId));
+        User admin = userRepository.findByEmail(getCurrentUserEmail())
+            .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
 
         inquiry.updateInquiryStatus(responseDto);
         inquiryRepository.save(inquiry);

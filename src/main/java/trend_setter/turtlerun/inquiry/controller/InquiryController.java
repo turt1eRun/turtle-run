@@ -57,10 +57,9 @@ public class InquiryController {
     @PostMapping("/{id}/response")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<InquiryResponseDto> createResponse(@PathVariable Long id,
-        @RequestBody InquiryResponseDto responseDto, @RequestParam Long adminId) {
-        InquiryResponseDto createdResponse = inquiryService.createResponse(id, responseDto,
-            adminId);
-        return ResponseEntity.ok(createdResponse);
+        @RequestBody InquiryResponseDto responseDto) {
+        InquiryResponseDto createdResponse = inquiryService.createResponse(id, responseDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdResponse);
     }
 
     // 제목으로 검색하기
