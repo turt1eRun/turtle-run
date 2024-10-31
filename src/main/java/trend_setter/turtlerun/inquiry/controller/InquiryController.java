@@ -37,6 +37,7 @@ public class InquiryController {
 
     // 게시글 작성
     @PostMapping
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Long> createInquiry(@RequestBody InquiryWriteDto requestDto,
         @RequestParam String nickname) {
         Long inquiryId = inquiryService.createInquiry(requestDto, nickname);
