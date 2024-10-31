@@ -43,6 +43,14 @@ public class InquiryController {
         return ResponseEntity.ok(inquiryId);
     }
 
+    // 본인이 작성한 글 목록 조회
+    @GetMapping("/me")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<List<InquiryListDto>> getMyInquiries() {
+        List<InquiryListDto> myInquiries = inquiryService.getMyInquiries();
+        return ResponseEntity.ok(myInquiries);
+    }
+
     // 게시글에 답글 달기 (관리자 전용)
     @PostMapping("/{id}/response")
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")

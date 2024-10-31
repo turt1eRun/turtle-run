@@ -4,6 +4,7 @@ import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import trend_setter.turtlerun.inquiry.dto.InquiryListDto;
 import trend_setter.turtlerun.inquiry.dto.InquiryResponseDto;
@@ -49,6 +50,15 @@ public class InquiryService {
         Inquiry inquiry = InquiryMapper.toEntity(requestDto, user);
         inquiryRepository.save(inquiry);
         return inquiry.getId();
+    }
+
+    // 본인이 작성한 글 조회
+    public List<InquiryListDto> getMyInquiries() {
+        String currentUserEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        return inquiryRepository.findByUser_Email(currentUserEmail).stream()
+            .map(InquiryMapper::toInquiryListDto)
+            .collect(Collectors.toList());
     }
 
     // 답글 달기
