@@ -4,6 +4,7 @@ import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import trend_setter.turtlerun.inquiry.dto.InquiryListDto;
@@ -28,14 +29,26 @@ public class InquiryService {
     private final InquiryResponseRepository inquiryResponseRepository;
     private final UserRepository userRepository;
 
-    // 게시글 목록 조회
-    public List<InquiryListDto> getInquiries() {
-        return inquiryRepository.findAll().stream().map(
-            inquiry -> new InquiryListDto(inquiry.getId(), inquiry.getTitle(),
-                inquiry.getInquiryStatus())).collect(Collectors.toList());
+    // 현재 인증된 사용자의 이메일을 가져오는 메서드
+    private String getCurrentUserEmail() {
+        return SecurityContextHolder.getContext().getAuthentication().getName();
     }
 
-    // 게시글 상세 조회
+    // 현재 사용자가 특정 문의의 작성자인지 확인
+    public boolean isAuthor(Long inquiryId) {
+        return inquiryRepository.findById(inquiryId)
+            .map(inquiry -> inquiry.getUser().getEmail().equals(getCurrentUserEmail()))
+            .orElse(false);
+    }
+
+    // 게시글 목록 조회
+    public List<InquiryListDto> getInquiries() {
+        return inquiryRepository.findAll().stream()
+            .map(InquiryMapper::toInquiryListDto)
+            .collect(Collectors.toList());
+    }
+
+    // 게시글 상세 조회 (작성자 또는 관리자)
     public InquiryDetailDto getInquiryDetails(Long id) {
         Inquiry inquiry = inquiryRepository.findById(id)
             .orElseThrow(() -> new IllegalArgumentException("해당 ID의 문의를 찾을 수 없습니다: " + id));
@@ -46,7 +59,7 @@ public class InquiryService {
     @Transactional
     public Long createInquiry(InquiryWriteDto requestDto, String nickname) {
         User user = userRepository.findByNickname(nickname)
-            .orElseThrow(() -> new IllegalArgumentException("해당 이메일의 유저를 찾을 수 없습니다: " + nickname));
+            .orElseThrow(() -> new IllegalArgumentException("해당 닉네임의 유저를 찾을 수 없습니다: " + nickname));
         Inquiry inquiry = InquiryMapper.toEntity(requestDto, user);
         inquiryRepository.save(inquiry);
         return inquiry.getId();
@@ -54,9 +67,7 @@ public class InquiryService {
 
     // 본인이 작성한 글 조회
     public List<InquiryListDto> getMyInquiries() {
-        String currentUserEmail = SecurityContextHolder.getContext().getAuthentication().getName();
-
-        return inquiryRepository.findByUser_Email(currentUserEmail).stream()
+        return inquiryRepository.findByUser_Email(getCurrentUserEmail()).stream()
             .map(InquiryMapper::toInquiryListDto)
             .collect(Collectors.toList());
     }
@@ -81,16 +92,18 @@ public class InquiryService {
         return InquiryResponseMapper.toInquiryResponseDto(savedResponse);
     }
 
-    // 제목으로 검색
+    // 제목으로 검색 (관리자 전용)
     public List<InquiryListDto> searchInquiriesByTitle(String title) {
         return inquiryRepository.findByTitleContaining(title).stream()
-            .map(InquiryMapper::toInquiryListDto).collect(Collectors.toList());
+            .map(InquiryMapper::toInquiryListDto)
+            .collect(Collectors.toList());
     }
 
-    // 닉네임으로 검색
+    // 닉네임으로 검색 (관리자 전용)
     public List<InquiryListDto> searchInquiriesByNickname(String nickname) {
         return inquiryRepository.findByUser_NicknameContaining(nickname).stream()
-            .map(InquiryMapper::toInquiryListDto).collect(Collectors.toList());
+            .map(InquiryMapper::toInquiryListDto)
+            .collect(Collectors.toList());
     }
 
     // 게시글 상태 변경
