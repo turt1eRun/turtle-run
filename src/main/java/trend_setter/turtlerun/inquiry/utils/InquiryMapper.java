@@ -16,7 +16,7 @@ public class InquiryMapper {
     // Inquiry 엔티티 -> InquiryDetailDto
     public static InquiryDetailDto toResponseDto(Inquiry inquiry) {
         return new InquiryDetailDto(inquiry.getId(), inquiry.getTitle(), inquiry.getContent(),
-            inquiry.getInquiryStatus(), inquiry.getUser().getEmail());
+            inquiry.getInquiryStatus(), inquiry.getUser().getNickname());
     }
 
     // Inquiry 엔티티 -> InquiryListDto

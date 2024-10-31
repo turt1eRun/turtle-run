@@ -8,5 +8,5 @@ public record InquiryDetailDto(
     String title, // 제목
     String content, // 내용
     InquiryStatus inquiryStatus, // 상태
-    String userEmail // 작성자 이메일
+    String nickname // 작성자 닉네임
 ) implements InquiryDto {}

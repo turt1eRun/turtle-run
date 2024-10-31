@@ -2,6 +2,8 @@ package trend_setter.turtlerun.inquiry.controller;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -38,10 +40,9 @@ public class InquiryController {
     // 게시글 작성
     @PostMapping
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<Long> createInquiry(@RequestBody InquiryWriteDto requestDto,
-        @RequestParam String nickname) {
-        Long inquiryId = inquiryService.createInquiry(requestDto, nickname);
-        return ResponseEntity.ok(inquiryId);
+    public ResponseEntity<InquiryDetailDto> createInquiry(@RequestBody InquiryWriteDto requestDto) {
+        InquiryDetailDto inquiry = inquiryService.createInquiry(requestDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(inquiry);
     }
 
     // 본인이 작성한 글 목록 조회

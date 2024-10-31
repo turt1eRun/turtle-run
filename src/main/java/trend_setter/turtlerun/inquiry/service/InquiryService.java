@@ -4,7 +4,6 @@ import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import trend_setter.turtlerun.inquiry.dto.InquiryListDto;
@@ -57,12 +56,14 @@ public class InquiryService {
 
     // 게시글 작성
     @Transactional
-    public Long createInquiry(InquiryWriteDto requestDto, String nickname) {
-        User user = userRepository.findByNickname(nickname)
-            .orElseThrow(() -> new IllegalArgumentException("해당 닉네임의 유저를 찾을 수 없습니다: " + nickname));
+    public InquiryDetailDto createInquiry(InquiryWriteDto requestDto) {
+        User user = userRepository.findByEmail(getCurrentUserEmail())
+            .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+
         Inquiry inquiry = InquiryMapper.toEntity(requestDto, user);
-        inquiryRepository.save(inquiry);
-        return inquiry.getId();
+        Inquiry savedInquiry = inquiryRepository.save(inquiry);
+
+        return InquiryMapper.toResponseDto(savedInquiry);
     }
 
     // 본인이 작성한 글 조회
