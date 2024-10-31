@@ -20,7 +20,7 @@ public class InquiryResponseMapper {
     // InquiryResponse 엔티티 -> InquiryResponseDto
     public static InquiryResponseDto toInquiryResponseDto(InquiryResponse inquiryResponse) {
         return new InquiryResponseDto(
-            inquiryResponse.getResponse()
+            inquiryResponse.getResponse(), inquiryResponse.getUser().getNickname()
         );
     }
 }

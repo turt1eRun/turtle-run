@@ -2,6 +2,8 @@ package trend_setter.turtlerun.inquiry.controller;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -21,7 +23,7 @@ public class InquiryController {
 
     // 게시글 목록 조회 (관리자 전용)
     @GetMapping
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<List<InquiryListDto>> getInquiries() {
         List<InquiryListDto> inquiries = inquiryService.getInquiries();
         return ResponseEntity.ok(inquiries);
@@ -29,7 +31,7 @@ public class InquiryController {
 
     // 게시글 상세 조회
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or @inquiryService.isAuthor(#id)")
     public ResponseEntity<InquiryDetailDto> getInquiryDetails(@PathVariable Long id) {
         InquiryDetailDto inquiry = inquiryService.getInquiryDetails(id);
         return ResponseEntity.ok(inquiry);
@@ -38,10 +40,9 @@ public class InquiryController {
     // 게시글 작성
     @PostMapping
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<Long> createInquiry(@RequestBody InquiryWriteDto requestDto,
-        @RequestParam String nickname) {
-        Long inquiryId = inquiryService.createInquiry(requestDto, nickname);
-        return ResponseEntity.ok(inquiryId);
+    public ResponseEntity<InquiryDetailDto> createInquiry(@RequestBody InquiryWriteDto requestDto) {
+        InquiryDetailDto inquiry = inquiryService.createInquiry(requestDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(inquiry);
     }
 
     // 본인이 작성한 글 목록 조회
@@ -54,17 +55,16 @@ public class InquiryController {
 
     // 게시글에 답글 달기 (관리자 전용)
     @PostMapping("/{id}/response")
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<InquiryResponseDto> createResponse(@PathVariable Long id,
-        @RequestBody InquiryResponseDto responseDto, @RequestParam Long adminId) {
-        InquiryResponseDto createdResponse = inquiryService.createResponse(id, responseDto,
-            adminId);
-        return ResponseEntity.ok(createdResponse);
+        @RequestBody InquiryResponseDto responseDto) {
+        InquiryResponseDto createdResponse = inquiryService.createResponse(id, responseDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdResponse);
     }
 
     // 제목으로 검색하기
     @GetMapping("/search/title")
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<List<InquiryListDto>> searchInquiriesByTitle(
         @RequestParam String keyword) {
         List<InquiryListDto> results = inquiryService.searchInquiriesByTitle(keyword);
@@ -73,7 +73,7 @@ public class InquiryController {
 
     // 닉네임으로 검색하기
     @GetMapping("/search/nickname")
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<List<InquiryListDto>> searchInquiriesByNickname(
         @RequestParam String nickname) {
         List<InquiryListDto> results = inquiryService.searchInquiriesByNickname(nickname);
@@ -82,7 +82,7 @@ public class InquiryController {
 
     // 게시글 상태 변경
     @PutMapping("/{id}/status")
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Void> updateInquiryStatus(@PathVariable Long id,
         @RequestBody InquiryStatusUpdateDto statusUpdateDto) {
         inquiryService.updateInquiryStatus(id, statusUpdateDto);
