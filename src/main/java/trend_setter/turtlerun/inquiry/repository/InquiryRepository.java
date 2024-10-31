@@ -6,6 +6,9 @@ import trend_setter.turtlerun.inquiry.entity.Inquiry;
 
 public interface InquiryRepository extends JpaRepository<Inquiry, Long> {
 
+    // 이메일을 기준으로 작성된 게시글 조회
+    List<Inquiry> findByUser_Email(String email);
+
     // 제목을 기준으로 검색
     List<Inquiry> findByTitleContaining(String title);
 

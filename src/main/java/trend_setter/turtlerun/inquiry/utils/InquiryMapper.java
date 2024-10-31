@@ -4,7 +4,7 @@ import trend_setter.turtlerun.inquiry.dto.InquiryListDto;
 import trend_setter.turtlerun.inquiry.dto.InquiryWriteDto;
 import trend_setter.turtlerun.inquiry.dto.InquiryDetailDto;
 import trend_setter.turtlerun.inquiry.entity.Inquiry;
-import trend_setter.turtlerun.user.User;
+import trend_setter.turtlerun.user.entity.User;
 
 public class InquiryMapper {
 

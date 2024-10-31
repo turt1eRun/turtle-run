@@ -4,10 +4,10 @@ import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import trend_setter.turtlerun.inquiry.dto.InquiryListDto;
 import trend_setter.turtlerun.inquiry.dto.InquiryResponseDto;
-import trend_setter.turtlerun.inquiry.dto.InquirySearchDto;
 import trend_setter.turtlerun.inquiry.dto.InquiryStatusUpdateDto;
 import trend_setter.turtlerun.inquiry.dto.InquiryWriteDto;
 import trend_setter.turtlerun.inquiry.dto.InquiryDetailDto;
@@ -17,7 +17,7 @@ import trend_setter.turtlerun.inquiry.repository.InquiryResponseRepository;
 import trend_setter.turtlerun.inquiry.utils.InquiryMapper;
 import trend_setter.turtlerun.inquiry.repository.InquiryRepository;
 import trend_setter.turtlerun.inquiry.utils.InquiryResponseMapper;
-import trend_setter.turtlerun.user.User;
+import trend_setter.turtlerun.user.entity.User;
 import trend_setter.turtlerun.user.repository.UserRepository;
 
 @Service
@@ -50,6 +50,15 @@ public class InquiryService {
         Inquiry inquiry = InquiryMapper.toEntity(requestDto, user);
         inquiryRepository.save(inquiry);
         return inquiry.getId();
+    }
+
+    // 본인이 작성한 글 조회
+    public List<InquiryListDto> getMyInquiries() {
+        String currentUserEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        return inquiryRepository.findByUser_Email(currentUserEmail).stream()
+            .map(InquiryMapper::toInquiryListDto)
+            .collect(Collectors.toList());
     }
 
     // 답글 달기

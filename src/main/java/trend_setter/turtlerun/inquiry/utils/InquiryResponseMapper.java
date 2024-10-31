@@ -3,7 +3,7 @@ package trend_setter.turtlerun.inquiry.utils;
 import trend_setter.turtlerun.inquiry.dto.InquiryResponseDto;
 import trend_setter.turtlerun.inquiry.entity.Inquiry;
 import trend_setter.turtlerun.inquiry.entity.InquiryResponse;
-import trend_setter.turtlerun.user.User;
+import trend_setter.turtlerun.user.entity.User;
 
 public class InquiryResponseMapper {
 
