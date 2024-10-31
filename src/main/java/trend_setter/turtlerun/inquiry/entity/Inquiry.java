@@ -9,7 +9,7 @@ import trend_setter.turtlerun.global.common.BaseTimeEntity;
 import trend_setter.turtlerun.inquiry.dto.InquiryDto;
 import trend_setter.turtlerun.inquiry.dto.InquiryResponseDto;
 import trend_setter.turtlerun.inquiry.dto.InquiryStatusUpdateDto;
-import trend_setter.turtlerun.user.User;
+import trend_setter.turtlerun.user.entity.User;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -48,7 +48,7 @@ public class Inquiry extends BaseTimeEntity {
     public void updateInquiryStatus(InquiryDto inquiryDto) {
         if (inquiryDto instanceof InquiryStatusUpdateDto inquiryStatusUpdateDto) {
             this.inquiryStatus = inquiryStatusUpdateDto.newStatus();
-        } else if (inquiryDto instanceof InquiryResponseDto inquiryResponseDto) {
+        } else if (inquiryDto instanceof InquiryResponseDto) {
             this.inquiryStatus = InquiryStatus.ANSWERED;
         }
     }
