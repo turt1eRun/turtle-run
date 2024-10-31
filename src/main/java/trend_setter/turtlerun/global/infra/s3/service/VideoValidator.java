@@ -1,9 +1,10 @@
-package trend_setter.turtlerun.global.infra.s3;
+package trend_setter.turtlerun.global.infra.s3.service;
 
-import jakarta.validation.ValidationException;
 import java.util.Set;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
+import trend_setter.turtlerun.global.error.code.FileErrorCode;
+import trend_setter.turtlerun.global.error.exception.FileException;
 
 @Component
 public class VideoValidator {
@@ -12,10 +13,7 @@ public class VideoValidator {
 
     private static final Set<String> ALLOWED_VIDEO_TYPES = Set.of(
         "video/mp4",
-        "video/quicktime",
-        "video/x-msvideo",
-        "video/mpeg",
-        "video/webm"
+        "video/mpeg"
     );
 
     public void validate(MultipartFile file) {
@@ -26,20 +24,20 @@ public class VideoValidator {
 
     private void validateEmpty(MultipartFile file) {
         if (file.isEmpty()) {
-            throw new ValidationException("File is empty");
+            throw new FileException(FileErrorCode.FILE_NOT_FOUND);
         }
     }
 
     private void validateSize(MultipartFile file) {
         if (file.getSize() > MAX_FILE_SIZE) {
-            throw new ValidationException("File is too large");
+            throw new FileException(FileErrorCode.FILE_SIZE_EXCEED);
         }
     }
 
     private void validateType(MultipartFile file) {
         String type = file.getContentType();
         if (type == null || !ALLOWED_VIDEO_TYPES.contains(type)) {
-            throw new ValidationException("File type not supported");
+            throw new FileException(FileErrorCode.INVALID_VIDEO_FORMAT);
         }
     }
 }

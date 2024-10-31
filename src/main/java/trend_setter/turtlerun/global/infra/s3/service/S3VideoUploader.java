@@ -1,16 +1,12 @@
-package trend_setter.turtlerun.global.infra.s3;
+package trend_setter.turtlerun.global.infra.s3.service;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.jcodec.api.FrameGrab;
-import org.jcodec.api.JCodecException;
-import org.jcodec.common.io.NIOUtils;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
@@ -20,62 +16,52 @@ import software.amazon.awssdk.services.s3.model.CompletedMultipartUpload;
 import software.amazon.awssdk.services.s3.model.CompletedPart;
 import software.amazon.awssdk.services.s3.model.CreateMultipartUploadRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+import software.amazon.awssdk.services.s3.model.S3Exception;
 import software.amazon.awssdk.services.s3.model.UploadPartRequest;
-import trend_setter.turtlerun.content.constant.ContentDirectory;
-import trend_setter.turtlerun.content.entity.VideoFile;
-import trend_setter.turtlerun.global.util.FilePathUtils;
+import trend_setter.turtlerun.global.error.code.FileErrorCode;
+import trend_setter.turtlerun.global.error.exception.FileException;
 
-@Slf4j
-@Component
+@Service
 @RequiredArgsConstructor
-public class VideoUploader {
+public class S3VideoUploader {
 
-    private static final int CHUNK_SIZE = 5 * 1024 * 1024; //5MB
+    private static final int CHUNK_SIZE = 5 * 1024 * 1024;
     private final S3Client s3Client;
-    private final VideoValidator validator;
 
     @Value("${spring.cloud.aws.s3.bucket}")
     private String bucket;
 
-    public VideoFile upload(MultipartFile file) {
-        validator.validate(file);
-
-        String fileName = FilePathUtils.createFileName();
-        String filePath = FilePathUtils.createFilePath(ContentDirectory.VIDEO, fileName);
-        int duration = extractDuration(file);
-
+    public void upload(MultipartFile file, String filePath, Map<String, String> metadata) {
         try {
             if (file.getSize() > CHUNK_SIZE) {
-                multipartUpload(file, filePath);
+                multipartUpload(file, filePath, metadata);
             } else {
-                simpleUpload(file, filePath);
+                simpleUpload(file, filePath, metadata);
             }
-            return VideoFile.builder()
-                .fileName(fileName).filePath(filePath).duration(duration)
-                .build();
-
-        } catch (IOException e) {
-            log.error("failed to upload file: {}", e.getMessage());
-            throw new RuntimeException(e);
+        } catch (IOException | S3Exception e) {
+            throw new FileException(FileErrorCode.FILE_UPLOAD_ERROR);
         }
     }
 
-    private void simpleUpload(MultipartFile file, String filePath) throws IOException {
+    private void simpleUpload(MultipartFile file, String filePath, Map<String, String> metadata)
+        throws IOException {
         PutObjectRequest request = PutObjectRequest.builder()
             .bucket(bucket)
             .key(filePath)
             .contentType(file.getContentType())
+            .metadata(metadata)
             .build();
 
         s3Client.putObject(request,
             RequestBody.fromInputStream(file.getInputStream(), file.getSize()));
     }
 
-    private void multipartUpload(MultipartFile file, String filePath) throws IOException {
+    protected void multipartUpload(MultipartFile file, String filePath,
+        Map<String, String> metadata) throws IOException {
         String uploadId = null;
         try {
             //멀티파트 업로드 시작
-            uploadId = initMultipartUpload(file, filePath);
+            uploadId = initMultipartUpload(file, filePath, metadata);
 
             //청크 단위 업로드
             List<CompletedPart> completedParts = uploadParts(file, filePath, uploadId);
@@ -90,17 +76,19 @@ public class VideoUploader {
         }
     }
 
-    private String initMultipartUpload(MultipartFile file, String filePath) throws IOException {
+    protected String initMultipartUpload(MultipartFile file, String filePath,
+        Map<String, String> metadata) throws IOException {
         CreateMultipartUploadRequest createRequest = CreateMultipartUploadRequest.builder()
             .bucket(bucket)
             .key(filePath)
             .contentType(file.getContentType())
+            .metadata(metadata)
             .build();
 
         return s3Client.createMultipartUpload(createRequest).uploadId();
     }
 
-    private List<CompletedPart> uploadParts(MultipartFile file, String filePath, String uploadId)
+    protected List<CompletedPart> uploadParts(MultipartFile file, String filePath, String uploadId)
         throws IOException {
         List<CompletedPart> completedParts = new ArrayList<>();
         byte[] bytes = file.getBytes();
@@ -136,7 +124,7 @@ public class VideoUploader {
         return completedParts;
     }
 
-    private void completeMultipartUpload(String filePath, String uploadId,
+    protected void completeMultipartUpload(String filePath, String uploadId,
         List<CompletedPart> completedParts) {
         CompletedMultipartUpload multipartUpload = CompletedMultipartUpload.builder()
             .parts(completedParts)
@@ -152,7 +140,7 @@ public class VideoUploader {
         s3Client.completeMultipartUpload(completeRequest);
     }
 
-    private void abortMultipartUpload(String filePath, String uploadId) {
+    protected void abortMultipartUpload(String filePath, String uploadId) {
         try {
             AbortMultipartUploadRequest abortRequest = AbortMultipartUploadRequest.builder()
                 .bucket(bucket)
@@ -162,28 +150,8 @@ public class VideoUploader {
 
             s3Client.abortMultipartUpload(abortRequest);
         } catch (Exception e) {
-            log.error("Failed to abort multipart upload", e);
+            throw new FileException(FileErrorCode.FAILED_TO_ABORT);
         }
     }
 
-    private int extractDuration(MultipartFile file) {
-        try {
-            File tempFile = File.createTempFile("video", null);
-            file.transferTo(tempFile);
-
-            double durationSec = FrameGrab
-                .createFrameGrab(NIOUtils.readableChannel(tempFile))
-                .getVideoTrack()
-                .getMeta()
-                .getTotalDuration();
-
-            tempFile.delete();
-
-            return (int) Math.round(durationSec);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (JCodecException e) {
-            throw new RuntimeException(e);
-        }
-    }
 }
