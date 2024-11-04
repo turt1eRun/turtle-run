@@ -1,6 +1,8 @@
 package trend_setter.turtlerun.inquiry.repository;
 
 import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import trend_setter.turtlerun.inquiry.entity.Inquiry;
 
@@ -10,8 +12,8 @@ public interface InquiryRepository extends JpaRepository<Inquiry, Long> {
     List<Inquiry> findByUser_Email(String email);
 
     // 제목을 기준으로 검색
-    List<Inquiry> findByTitleContaining(String title);
+    Page<Inquiry> findByTitleContaining(String title, Pageable pageable);
 
     // 닉네임을 기준으로 검색
-    List<Inquiry> findByUser_NicknameContaining(String nickname);
+    Page<Inquiry> findByUser_NicknameContaining(String nickname, Pageable pageable);
 }

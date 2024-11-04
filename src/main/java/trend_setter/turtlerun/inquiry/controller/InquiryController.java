@@ -2,8 +2,9 @@ package trend_setter.turtlerun.inquiry.controller;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -24,8 +25,8 @@ public class InquiryController {
     // 게시글 목록 조회 (관리자 전용)
     @GetMapping
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<List<InquiryListDto>> getInquiries() {
-        List<InquiryListDto> inquiries = inquiryService.getInquiries();
+    public ResponseEntity<Page<InquiryListDto>> getInquiries(Pageable pageable) {
+        Page<InquiryListDto> inquiries = inquiryService.getInquiries(pageable);
         return ResponseEntity.ok(inquiries);
     }
 
@@ -65,18 +66,18 @@ public class InquiryController {
     // 제목으로 검색하기
     @GetMapping("/search/title")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<List<InquiryListDto>> searchInquiriesByTitle(
-        @RequestParam String keyword) {
-        List<InquiryListDto> results = inquiryService.searchInquiriesByTitle(keyword);
+    public ResponseEntity<Page<InquiryListDto>> searchInquiriesByTitle(
+        @RequestParam String keyword, Pageable pageable) {
+        Page<InquiryListDto> results = inquiryService.searchInquiriesByTitle(keyword, pageable);
         return ResponseEntity.ok(results);
     }
 
     // 닉네임으로 검색하기
     @GetMapping("/search/nickname")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<List<InquiryListDto>> searchInquiriesByNickname(
-        @RequestParam String nickname) {
-        List<InquiryListDto> results = inquiryService.searchInquiriesByNickname(nickname);
+    public ResponseEntity<Page<InquiryListDto>> searchInquiriesByNickname(
+        @RequestParam String nickname, Pageable pageable) {
+        Page<InquiryListDto> results = inquiryService.searchInquiriesByNickname(nickname, pageable);
         return ResponseEntity.ok(results);
     }
 
