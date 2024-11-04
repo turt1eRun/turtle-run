@@ -33,4 +33,8 @@ public class VideoFile {
         this.filePath = filePath;
         this.duration = duration;
     }
+
+    public VideoFile(Long id) {
+        this.id = id;
+    }
 }

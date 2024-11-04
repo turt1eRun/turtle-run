@@ -11,6 +11,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import trend_setter.turtlerun.content.constant.VideoStatus;
@@ -36,6 +37,7 @@ public class Video {
     @Enumerated(EnumType.STRING)
     private VideoStatus videoStatus;
 
+    @Builder
     protected Video (VideoFile videoFile) {
         this.videoFile = videoFile;
         this.videoStatus = VideoStatus.PENDING;
