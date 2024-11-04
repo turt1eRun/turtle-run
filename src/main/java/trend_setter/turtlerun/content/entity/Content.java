@@ -17,6 +17,7 @@ import java.util.List;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import trend_setter.turtlerun.global.common.BaseEntity;
 import trend_setter.turtlerun.user.entity.User;
 
@@ -36,9 +37,11 @@ public class Content extends BaseEntity {
     @JoinColumn(name = "creator_id", nullable = false)
     private User creator;
 
+    @Setter
     @OneToOne(mappedBy = "content", cascade = CascadeType.ALL)
     private Video video;
 
+    @Setter
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "thumbnail_id")
     private ThumbnailFile thumbnail;
@@ -49,7 +52,6 @@ public class Content extends BaseEntity {
     protected Content(String title, User creator, ThumbnailFile thumbnail, Video video) {
         this.title = title;
         this.creator = creator;
-        this.thumbnail = thumbnail;
-        this.video = video;
     }
+
 }
