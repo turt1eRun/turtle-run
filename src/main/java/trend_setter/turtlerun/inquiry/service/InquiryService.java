@@ -4,6 +4,8 @@ import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import trend_setter.turtlerun.inquiry.dto.InquiryListDto;
@@ -41,10 +43,8 @@ public class InquiryService {
     }
 
     // 게시글 목록 조회
-    public List<InquiryListDto> getInquiries() {
-        return inquiryRepository.findAll().stream()
-            .map(InquiryMapper::toInquiryListDto)
-            .collect(Collectors.toList());
+    public Page<InquiryListDto> getInquiries(Pageable pageable) {
+        return inquiryRepository.findAll(pageable).map(InquiryMapper::toInquiryListDto);
     }
 
     // 게시글 상세 조회 (작성자 또는 관리자)
@@ -93,17 +93,14 @@ public class InquiryService {
     }
 
     // 제목으로 검색 (관리자 전용)
-    public List<InquiryListDto> searchInquiriesByTitle(String title) {
-        return inquiryRepository.findByTitleContaining(title).stream()
-            .map(InquiryMapper::toInquiryListDto)
-            .collect(Collectors.toList());
+    public Page<InquiryListDto> searchInquiriesByTitle(String title, Pageable pageable) {
+        return inquiryRepository.findByTitleContaining(title, pageable)
+            .map(InquiryMapper::toInquiryListDto);
     }
 
     // 닉네임으로 검색 (관리자 전용)
-    public List<InquiryListDto> searchInquiriesByNickname(String nickname) {
-        return inquiryRepository.findByUser_NicknameContaining(nickname).stream()
-            .map(InquiryMapper::toInquiryListDto)
-            .collect(Collectors.toList());
+    public Page<InquiryListDto> searchInquiriesByNickname(String nickname, Pageable pageable) {
+        return inquiryRepository.findByUser_NicknameContaining(nickname, pageable).map(InquiryMapper::toInquiryListDto);
     }
 
     // 게시글 상태 변경
