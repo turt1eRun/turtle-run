@@ -17,6 +17,7 @@ import java.util.List;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import trend_setter.turtlerun.content.dto.CreateContentRequest;
 import trend_setter.turtlerun.global.common.BaseEntity;
 import trend_setter.turtlerun.user.entity.User;
 
@@ -26,7 +27,8 @@ import trend_setter.turtlerun.user.entity.User;
 @Table(name = "contents")
 public class Content extends BaseEntity {
 
-    @Id @Column(name = "content_id")
+    @Id
+    @Column(name = "content_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
@@ -36,8 +38,9 @@ public class Content extends BaseEntity {
     @JoinColumn(name = "creator_id", nullable = false)
     private User creator;
 
-    @OneToOne(mappedBy = "content", cascade = CascadeType.ALL)
-    private Video video;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "video_id")
+    private VideoFile video;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "thumbnail_id")
@@ -46,10 +49,13 @@ public class Content extends BaseEntity {
     @OneToMany(mappedBy = "content", cascade = CascadeType.ALL)
     private List<DescriptionBlock> descriptionBlocks = new ArrayList<>();
 
-    protected Content(String title, User creator, ThumbnailFile thumbnail, Video video) {
-        this.title = title;
-        this.creator = creator;
-        this.thumbnail = thumbnail;
-        this.video = video;
+    public Content(User user, CreateContentRequest request) {
+        this.title = request.title();
+        this.creator = user;
+        this.video = new VideoFile(request.videoFileId());
+        this.thumbnail = new ThumbnailFile(request.thumbnailFileId());
+        this.descriptionBlocks = request.createBlockRequests().stream().map
+            (blockRequest -> new DescriptionBlock(blockRequest, this)).toList();
     }
+
 }

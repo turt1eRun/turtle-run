@@ -27,4 +27,8 @@ public class DescriptionFile {
         this.fileName = fileName;
         this.filePath = filePath;
     }
+
+    public DescriptionFile(Long id) {
+        this.id = id;
+    }
 }

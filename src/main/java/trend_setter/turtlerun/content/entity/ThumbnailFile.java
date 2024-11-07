@@ -23,8 +23,12 @@ public class ThumbnailFile {
     private String fileName;
     private String filePath;
 
-    protected ThumbnailFile(String fileName, String filePath) {
+    public ThumbnailFile(String fileName, String filePath) {
         this.fileName = fileName;
         this.filePath = filePath;
+    }
+
+    public ThumbnailFile(Long id) {
+        this.id = id;
     }
 }

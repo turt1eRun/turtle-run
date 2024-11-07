@@ -16,6 +16,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import trend_setter.turtlerun.content.constant.BlockType;
+import trend_setter.turtlerun.content.dto.CreateBlockRequest;
 
 @Entity
 @Getter
@@ -44,19 +45,16 @@ public class DescriptionBlock {
 
     private int orderNum;
 
-    // TEXT 블럭용 생성자
-    protected DescriptionBlock(Content content, String text, int orderNum) {
+    public DescriptionBlock(CreateBlockRequest request, Content content) {
+        if(request.text()!=null){
+            this.type = BlockType.TEXT;
+            this.text = request.text();
+        }
+        else {
+            this.type = BlockType.IMAGE;
+            this.descriptionFile = new DescriptionFile(request.descFileId());
+        }
+        this.orderNum = request.orderNum();
         this.content = content;
-        this.type = BlockType.TEXT;
-        this.text = text;
-        this.orderNum = orderNum;
-    }
-
-    // IMAGE 블럭용 생성자
-    protected DescriptionBlock(Content content, DescriptionFile file, int orderNum) {
-        this.content = content;
-        this.type = BlockType.IMAGE;
-        this.descriptionFile = file;
-        this.orderNum = orderNum;
     }
 }
