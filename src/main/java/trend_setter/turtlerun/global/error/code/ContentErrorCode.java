@@ -15,7 +15,9 @@ public enum ContentErrorCode implements ErrorCode {
     UNAUTHORIZED_CREATOR(403, "C007", "Unauthorized to create content"),
     CONTENT_CREATE_FAILED(500, "C008", "Failed to create content"),
     //videoFile
-    VIDEO_FILE_NOT_FOUND(404, "C009", "Video file not found");
+    VIDEO_FILE_NOT_FOUND(404, "C009", "Video file not found"),
+    //thumbnailFile
+    THUMBNAIL_FILE_NOT_FOUND(404, "C010", "Thumbnail file not found");
 
     private final int status;
     private final String code;
