@@ -45,5 +45,6 @@ public class Video {
 
     protected void initContent(Content content) {
         this.content = content;
+        content.setVideo(this);
     }
 }
