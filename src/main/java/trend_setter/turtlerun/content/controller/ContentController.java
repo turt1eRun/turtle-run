@@ -28,8 +28,7 @@ public class ContentController {
     private final DescriptionService descriptionService;
 
     @PostMapping("/videos")
-    public GetFileUploadResponse uploadVideo(@AuthenticationPrincipal UserDetails user,
-        @RequestPart("video") MultipartFile video) {
+    public GetFileUploadResponse uploadVideo(@RequestPart("video") MultipartFile video) {
         return videoService.uploadVideo(video);
     }
 
@@ -50,7 +49,4 @@ public class ContentController {
     ) {
         contentService.createContent(user, request);
     }
-
-
-
 }
