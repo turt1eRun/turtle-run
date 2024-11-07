@@ -6,7 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import trend_setter.turtlerun.global.common.BaseTimeEntity;
-import trend_setter.turtlerun.user.User;
+import trend_setter.turtlerun.user.entity.User;
 import trend_setter.turtlerun.content.entity.Content;
 
 @Entity
