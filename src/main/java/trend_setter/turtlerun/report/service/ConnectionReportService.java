@@ -11,7 +11,7 @@ import trend_setter.turtlerun.report.dto.ConnectionReportDto;
 import trend_setter.turtlerun.report.dto.CreateReportRequest;
 import trend_setter.turtlerun.report.entity.ConnectionReport;
 import trend_setter.turtlerun.report.repository.ConnectionReportRepository;
-import trend_setter.turtlerun.user.User;
+import trend_setter.turtlerun.user.entity.User;
 import trend_setter.turtlerun.user.repository.UserRepository;
 
 @Service
