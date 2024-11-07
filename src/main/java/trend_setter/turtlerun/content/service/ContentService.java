@@ -30,7 +30,7 @@ public class ContentService {
         validateUserAuthority(userDetails);
         validateRequest(request);
         User creator = findUser(userDetails);
-        Content content = new Content(creator, request);
+        Content content = request.toEntity(creator);
         contentRepository.save(content);
     }
 

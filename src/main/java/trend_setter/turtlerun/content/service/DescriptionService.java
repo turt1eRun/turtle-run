@@ -27,8 +27,9 @@ public class DescriptionService {
         String filePath = S3KeyGenerator.createFilePath(ContentDirectory.DESCRIPTION, fileName);
         s3ImageUploader.upload(file, filePath);
 
-        return new GetFileUploadResponse(
-            descriptionFileRepository.save(new DescriptionFile(fileName, filePath)));
+        DescriptionFile descriptionFile = descriptionFileRepository.save(
+            new DescriptionFile(fileName, filePath));
+        return GetFileUploadResponse.from(descriptionFile);
     }
 }
 

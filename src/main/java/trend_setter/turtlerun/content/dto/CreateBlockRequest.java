@@ -2,6 +2,8 @@ package trend_setter.turtlerun.content.dto;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
+import trend_setter.turtlerun.content.entity.Content;
+import trend_setter.turtlerun.content.entity.DescriptionBlock;
 import trend_setter.turtlerun.global.error.code.ContentErrorCode;
 import trend_setter.turtlerun.global.error.exception.ContentException;
 
@@ -24,5 +26,8 @@ public record CreateBlockRequest(String text, Long descFileId, @NotNull @Positiv
         if (!hasText && !hasFile) {
             throw new ContentException(ContentErrorCode.BLOCK_CONTENT_REQUIRED);
         }
+    }
+    public DescriptionBlock toEntity(Content content) {
+        return new DescriptionBlock(this, content);
     }
 }
