@@ -30,12 +30,12 @@ public class VideoHistory {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "video_id", nullable = false)
-    private Video video;
+    private VideoFile video;
 
     private int playTime;
     private LocalDateTime lastAccessedAt;
 
-    protected VideoHistory(User user, Video video, int playTime, LocalDateTime lastAccessedAt) {
+    protected VideoHistory(User user, VideoFile video, int playTime, LocalDateTime lastAccessedAt) {
         this.user = user;
         this.video = video;
         this.playTime = playTime;

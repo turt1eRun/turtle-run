@@ -9,9 +9,9 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import trend_setter.turtlerun.content.constant.VideoStatus;
 
 @Entity
 @Getter
@@ -23,12 +23,13 @@ public class VideoFile {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Enumerated(EnumType.STRING)
+    private VideoStatus videoStatus;
     private String fileName;
     private String filePath;
     private int duration;
 
-    @Builder
-    protected VideoFile(String fileName, String filePath, int duration) {
+    public VideoFile(String fileName, String filePath, int duration) {
         this.fileName = fileName;
         this.filePath = filePath;
         this.duration = duration;
