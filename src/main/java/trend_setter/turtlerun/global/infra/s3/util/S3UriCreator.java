@@ -1,7 +1,6 @@
 package trend_setter.turtlerun.global.infra.s3.util;
 
 import jakarta.annotation.PostConstruct;
-import java.net.URI;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -11,10 +10,10 @@ public class S3UriCreator {
     private static String bucket;
     private static String region;
 
-    @Value("${cloud.aws.s3.bucket}")
+    @Value("${spring.cloud.aws.s3.bucket}")
     private String instanceBucket;
 
-    @Value("${cloud.aws.region.static}")
+    @Value("${spring.cloud.aws.region.static}")
     private String instanceRegion;
 
     @PostConstruct
