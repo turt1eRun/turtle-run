@@ -46,6 +46,8 @@ public class Content extends BaseEntity {
     @JoinColumn(name = "thumbnail_id")
     private ThumbnailFile thumbnail;
 
+    private long views;
+
     @OneToMany(mappedBy = "content", cascade = CascadeType.ALL)
     private List<DescriptionBlock> descriptionBlocks = new ArrayList<>();
 
