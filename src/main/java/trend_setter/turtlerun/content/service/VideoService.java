@@ -37,10 +37,7 @@ public class VideoService {
         Map<String, String> metadata = Map.of("duration", String.valueOf(duration));
         s3VideoUploader.upload(file, filePath, metadata);
 
-        VideoFile videoFile = VideoFile.builder()
-            .fileName(fileName).filePath(filePath).duration(duration).build();
-
-        return new GetFileUploadResponse(videoFileRepository.save(videoFile));
+        return new GetFileUploadResponse(videoFileRepository.save(new VideoFile(fileName, filePath, duration)));
     }
 
     private int extractDuration(MultipartFile file) {

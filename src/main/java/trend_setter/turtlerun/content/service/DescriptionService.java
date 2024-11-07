@@ -7,7 +7,6 @@ import org.springframework.web.multipart.MultipartFile;
 import trend_setter.turtlerun.content.constant.ContentDirectory;
 import trend_setter.turtlerun.content.dto.GetFileUploadResponse;
 import trend_setter.turtlerun.content.entity.DescriptionFile;
-import trend_setter.turtlerun.content.entity.ThumbnailFile;
 import trend_setter.turtlerun.content.repository.DescriptionFileRepository;
 import trend_setter.turtlerun.global.infra.s3.service.ImageValidator;
 import trend_setter.turtlerun.global.infra.s3.service.S3ImageUploader;
@@ -28,10 +27,8 @@ public class DescriptionService {
         String filePath = S3KeyGenerator.createFilePath(ContentDirectory.DESCRIPTION, fileName);
         s3ImageUploader.upload(file, filePath);
 
-        DescriptionFile descriptionFile = DescriptionFile.builder()
-            .fileName(fileName).filePath(filePath).build();
-
-        return new GetFileUploadResponse(descriptionFileRepository.save(descriptionFile));
+        return new GetFileUploadResponse(
+            descriptionFileRepository.save(new DescriptionFile(fileName, filePath)));
     }
 }
 

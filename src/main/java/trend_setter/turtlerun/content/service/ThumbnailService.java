@@ -27,9 +27,6 @@ public class ThumbnailService {
         String filePath = S3KeyGenerator.createFilePath(ContentDirectory.THUMBNAIL, fileName);
         s3ImageUploader.upload(file, filePath);
 
-        ThumbnailFile thumbnailFile = ThumbnailFile.builder()
-            .fileName(fileName).filePath(filePath).build();
-
-        return new GetFileUploadResponse(thumbnailFileRepository.save(thumbnailFile));
+        return new GetFileUploadResponse(thumbnailFileRepository.save(new ThumbnailFile(fileName, filePath)));
     }
 }
