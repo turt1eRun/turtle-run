@@ -19,7 +19,7 @@ import lombok.NoArgsConstructor;
 import trend_setter.turtlerun.content.entity.Content;
 import trend_setter.turtlerun.global.common.BaseTimeEntity;
 import trend_setter.turtlerun.report.constant.ReportStatus;
-import trend_setter.turtlerun.user.User;
+import trend_setter.turtlerun.user.entity.User;
 
 @Entity
 @Getter
