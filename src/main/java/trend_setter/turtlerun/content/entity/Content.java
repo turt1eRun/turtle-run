@@ -15,6 +15,7 @@ import jakarta.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -49,6 +50,7 @@ public class Content extends BaseEntity {
     @OneToMany(mappedBy = "content", cascade = CascadeType.ALL)
     private List<DescriptionBlock> descriptionBlocks = new ArrayList<>();
 
+    @Builder
     protected Content(String title, User creator, ThumbnailFile thumbnail, Video video) {
         this.title = title;
         this.creator = creator;

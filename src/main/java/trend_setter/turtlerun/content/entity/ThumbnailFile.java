@@ -7,6 +7,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -23,6 +24,7 @@ public class ThumbnailFile {
     private String fileName;
     private String filePath;
 
+    @Builder
     protected ThumbnailFile(String fileName, String filePath) {
         this.fileName = fileName;
         this.filePath = filePath;
