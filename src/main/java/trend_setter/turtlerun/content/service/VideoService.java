@@ -6,8 +6,10 @@ import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.jcodec.api.JCodecException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import trend_setter.turtlerun.content.constant.ContentDirectory;
+import trend_setter.turtlerun.content.dto.GetFileUploadResponse;
 import trend_setter.turtlerun.content.entity.VideoFile;
 import trend_setter.turtlerun.content.repository.VideoFileRepository;
 import trend_setter.turtlerun.global.error.code.FileErrorCode;
@@ -26,7 +28,8 @@ public class VideoService {
     private final VideoValidator videoValidator;
     private final VideoFileRepository videoFileRepository;
 
-    public VideoFile uploadVideo(MultipartFile file) {
+    @Transactional
+    public GetFileUploadResponse uploadVideo(MultipartFile file) {
         videoValidator.validate(file);
         String fileName = S3KeyGenerator.createFileName();
         String filePath = S3KeyGenerator.createFilePath(ContentDirectory.VIDEO, fileName);
@@ -37,7 +40,7 @@ public class VideoService {
         VideoFile videoFile = VideoFile.builder()
             .fileName(fileName).filePath(filePath).duration(duration).build();
 
-        return videoFileRepository.save(videoFile);
+        return new GetFileUploadResponse(videoFileRepository.save(videoFile));
     }
 
     private int extractDuration(MultipartFile file) {
