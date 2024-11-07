@@ -1,4 +1,4 @@
-package trend_setter.turtlerun.connection.entity;
+package trend_setter.turtlerun.connection.constant;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

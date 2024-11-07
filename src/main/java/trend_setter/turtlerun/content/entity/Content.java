@@ -49,13 +49,13 @@ public class Content extends BaseEntity {
     @OneToMany(mappedBy = "content", cascade = CascadeType.ALL)
     private List<DescriptionBlock> descriptionBlocks = new ArrayList<>();
 
-    public Content(User user, CreateContentRequest request) {
+    public Content(CreateContentRequest request, User user) {
         this.title = request.title();
         this.creator = user;
         this.video = new VideoFile(request.videoFileId());
         this.thumbnail = new ThumbnailFile(request.thumbnailFileId());
         this.descriptionBlocks = request.createBlockRequests().stream().map
-            (blockRequest -> new DescriptionBlock(blockRequest, this)).toList();
+            (blockRequest -> blockRequest.toEntity(this)).toList();
     }
 
 }

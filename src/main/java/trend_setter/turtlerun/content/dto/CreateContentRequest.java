@@ -5,8 +5,11 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import java.util.List;
+import trend_setter.turtlerun.content.entity.Content;
 import trend_setter.turtlerun.global.error.code.ContentErrorCode;
 import trend_setter.turtlerun.global.error.exception.ContentException;
+import trend_setter.turtlerun.user.entity.User;
+
 /**
  * 컨텐츠 생성 요청 DTO
  *
@@ -23,12 +26,6 @@ public record CreateContentRequest(@NotBlank String title,
         validateBlockOrder(createBlockRequests);
     }
 
-/**
- * 설명 블록 순서 중복 검증
- *
- * @param requests 검증할 설명 블록 목록
- * @throws ContentException 블록 순서가 중복된 경우
- * */
     private void validateBlockOrder(List<CreateBlockRequest> requests){
         long distinctCount = requests.stream()
             .map(CreateBlockRequest::orderNum).distinct().count();
@@ -36,5 +33,9 @@ public record CreateContentRequest(@NotBlank String title,
         if(distinctCount != requests.size()){
             throw new ContentException(ContentErrorCode.DUPLICATE_BLOCK_ORDER);
         }
+    }
+
+    public Content toEntity(User user) {
+        return new Content(this, user);
     }
 }

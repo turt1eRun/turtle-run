@@ -12,15 +12,15 @@ import trend_setter.turtlerun.global.infra.s3.util.S3UriCreator;
  */
 public record GetFileUploadResponse(Long id, String uploadUrl) {
 
-    public GetFileUploadResponse(VideoFile videoFile) {
-        this(videoFile.getId(), S3UriCreator.createUri(videoFile.getFilePath()));
+    public static GetFileUploadResponse from(VideoFile videoFile) {
+        return new GetFileUploadResponse(videoFile.getId(), S3UriCreator.createUri(videoFile.getFilePath()));
     }
 
-    public GetFileUploadResponse(ThumbnailFile thumbnailFile) {
-        this(thumbnailFile.getId(), S3UriCreator.createUri(thumbnailFile.getFilePath()));
+    public static GetFileUploadResponse from(ThumbnailFile thumbnailFile) {
+        return new GetFileUploadResponse(thumbnailFile.getId(), S3UriCreator.createUri(thumbnailFile.getFilePath()));
     }
 
-    public GetFileUploadResponse(DescriptionFile descriptionFile) {
-        this(descriptionFile.getId(), S3UriCreator.createUri(descriptionFile.getFilePath()));
+    public static GetFileUploadResponse from(DescriptionFile descriptionFile) {
+        return new GetFileUploadResponse(descriptionFile.getId(), S3UriCreator.createUri(descriptionFile.getFilePath()));
     }
 }
