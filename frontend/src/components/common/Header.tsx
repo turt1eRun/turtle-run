@@ -2,6 +2,7 @@ import React from "react";
 import {Menu, Search} from "lucide-react";
 import Link from "next/link";
 import {useSidebarStore} from "@/store/sidebarStore";
+import Image from "next/image";
 
 export default function Header() {
   const { toggleSidebar } = useSidebarStore()
@@ -12,7 +13,7 @@ export default function Header() {
           <button className="p-2 hover:bg-gray-100 rounded-lg" onClick={ toggleSidebar }>
             <Menu className="w-6 h-6 text-gray-500"/>
           </button>
-          <img src="/images/logo.png" alt=""/>
+          <Image src="/images/logo.png" alt='로고' width={88} height={64}/>
         </div>
 
         {/* Middle - Search Bar */}
