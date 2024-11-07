@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import trend_setter.turtlerun.content.dto.CreateContentRequest;
-import trend_setter.turtlerun.content.dto.GetFileUploadResponse;
+import trend_setter.turtlerun.content.dto.GetFileResponse;
 import trend_setter.turtlerun.content.service.ContentService;
 import trend_setter.turtlerun.content.service.DescriptionService;
 import trend_setter.turtlerun.content.service.ThumbnailService;
@@ -28,17 +28,17 @@ public class ContentController {
     private final DescriptionService descriptionService;
 
     @PostMapping("/videos")
-    public GetFileUploadResponse uploadVideo(@RequestPart("video") MultipartFile video) {
+    public GetFileResponse uploadVideo(@RequestPart("video") MultipartFile video) {
         return videoService.uploadVideo(video);
     }
 
     @PostMapping("/thumbnails")
-    public GetFileUploadResponse uploadThumbnail(@RequestPart("thumbnail") MultipartFile thumbnail) {
+    public GetFileResponse uploadThumbnail(@RequestPart("thumbnail") MultipartFile thumbnail) {
         return thumbnailService.uploadThumbnail(thumbnail);
     }
 
     @PostMapping("/block-images")
-    public GetFileUploadResponse uploadBlockImage(@RequestPart("block-image") MultipartFile blockImage) {
+    public GetFileResponse uploadBlockImage(@RequestPart("block-image") MultipartFile blockImage) {
         return descriptionService.uploadDescriptionImage(blockImage);
     }
 
