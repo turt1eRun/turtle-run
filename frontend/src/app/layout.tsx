@@ -1,7 +1,6 @@
 import type {Metadata} from "next";
 import "../styles/globals.css";
-import { pretendard } from "../lib/fonts";
-import Header from "@/components/common/Header";
+import {pretendard} from "../lib/fonts";
 
 
 export const metadata: Metadata = {
@@ -17,15 +16,6 @@ export default function RootLayout({
   return (
     <html lang="ko">
       <body className={pretendard.className}>
-        {/*<header>*/}
-        {/*  <Header/>*/}
-        {/*</header>*/}
-        {/*<main>*/}
-        {/*  {children}*/}
-        {/*</main>*/}
-        {/*<footer>*/}
-
-        {/*</footer>*/}
         {children}
       </body>
     </html>
