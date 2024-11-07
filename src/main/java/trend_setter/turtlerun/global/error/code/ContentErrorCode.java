@@ -17,7 +17,9 @@ public enum ContentErrorCode implements ErrorCode {
     //videoFile
     VIDEO_FILE_NOT_FOUND(404, "C009", "Video file not found"),
     //thumbnailFile
-    THUMBNAIL_FILE_NOT_FOUND(404, "C010", "Thumbnail file not found");
+    THUMBNAIL_FILE_NOT_FOUND(404, "C010", "Thumbnail file not found"),
+    //descriptionFile
+    DESCRIPTION_FILE_NOT_FOUND(404, "C011", "Description file not found");
 
     private final int status;
     private final String code;
