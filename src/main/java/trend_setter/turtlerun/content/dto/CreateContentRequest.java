@@ -20,9 +20,6 @@ public record CreateContentRequest(@NotBlank String title,
                                    @NotNull Long thumbnailFileId,
                                    @NotEmpty @Valid List<CreateBlockRequest> createBlockRequests) {
     public CreateContentRequest {
-        if(createBlockRequests == null || createBlockRequests.isEmpty()) {
-            throw new ContentException(ContentErrorCode.DESCRIPTION_BLOCK_REQUIRED);
-        }
         validateBlockOrder(createBlockRequests);
     }
 
