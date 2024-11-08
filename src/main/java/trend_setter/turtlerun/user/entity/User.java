@@ -14,7 +14,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import trend_setter.turtlerun.global.common.BaseTimeEntity;
+import trend_setter.turtlerun.global.common.BaseEntity;
 import trend_setter.turtlerun.user.constant.Role;
 
 @Entity
@@ -23,7 +23,7 @@ import trend_setter.turtlerun.user.constant.Role;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
-public class User extends BaseTimeEntity {
+public class User extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
