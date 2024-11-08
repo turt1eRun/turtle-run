@@ -1,18 +1,18 @@
 # Build Stage
-FROM node:18 AS build
+FROM node:20-alpine AS build
 
 WORKDIR /app
 
-COPY ./package*.json .
-RUN npm install
+COPY package.json yarn.lock ./
+RUN yarn install --frozen-lockfile
 
 COPY . .
-RUN npm run build
+RUN yarn build
 
 # RUN Stage
-FROM nginx:latest
-COPY --from=build /app/out /var/www/html/turtlerun
+FROM nginx:alpine
 COPY ./nginx/default.prod.conf /etc/nginx/conf.d/default.conf
+COPY --from=build /app/out /var/www/html/turtlerun
 EXPOSE 80
 
 ENTRYPOINT ["nginx", "-g", "daemon off;"]
