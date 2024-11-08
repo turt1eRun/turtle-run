@@ -17,9 +17,9 @@ public class UserResponseDto {
     private Long id;
     private String email;
     private String nickname;
-    private LocalDateTime created_at;
-    private LocalDateTime updated_at;
-    private LocalDateTime deleted_at;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+    private LocalDateTime deletedAt;
     private Role role;
 
     public static UserResponseDto toDto(User user) {
@@ -27,9 +27,9 @@ public class UserResponseDto {
             .id(user.getId())
             .email(user.getEmail())
             .nickname(user.getNickname())
-            .created_at(user.getCreatedAt())
-            .updated_at(user.getUpdatedAt())
-            .deleted_at(user.getDeleted_at())
+            .createdAt(user.getCreatedAt())
+            .updatedAt(user.getUpdatedAt())
+            .deletedAt(user.getDeletedAt())
             .role(user.getRole())
             .build();
     }
