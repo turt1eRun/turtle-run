@@ -38,11 +38,10 @@ public class User extends BaseEntity {
     @Column(nullable = false, unique = true, length = 15)
     private String nickname;
 
-    private LocalDateTime deleted_at;
-    private LocalDateTime rabbit_role_revocation_at;
+    private LocalDateTime deletedAt;
+    private LocalDateTime rabbitRoleRevocationAt;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Role role;
-
 }
