@@ -29,7 +29,7 @@ public class ConnectionReportController {
     ) {
         Long reportId = connectionReportService.reportConnection(request);
         CreateResponse createResponse = CreateResponse.of(reportId);
-        ApiResponse<CreateResponse> response = ApiResponse.success(createResponse);
+        ApiResponse<CreateResponse> response = ApiResponse.created(createResponse);
 
         return ResponseEntity
             .status(HttpStatus.CREATED)
@@ -37,10 +37,15 @@ public class ConnectionReportController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<ConnectionReportDto>> getConnectionReports(
+    public ResponseEntity<ApiResponse<Page<ConnectionReportDto>>> getConnectionReports(
         Pageable pageable
     ) {
-        return ResponseEntity.ok(connectionReportService.findConnectionReports(pageable));
+        Page<ConnectionReportDto> getResponse = connectionReportService.findConnectionReports(
+            pageable);
+        ApiResponse<Page<ConnectionReportDto>> response = ApiResponse.ok(getResponse);
+
+        return ResponseEntity
+            .ok(response);
     }
 
 

@@ -6,7 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import trend_setter.turtlerun.connection.entity.Connection;
-import trend_setter.turtlerun.content.repository.ConnectionRepository;
+import trend_setter.turtlerun.connection.repository.ConnectionRepository;
 import trend_setter.turtlerun.report.dto.ConnectionReportDto;
 import trend_setter.turtlerun.report.dto.CreateReportRequest;
 import trend_setter.turtlerun.report.entity.ConnectionReport;
@@ -45,6 +45,6 @@ public class ConnectionReportService {
     }
 
     public Page<ConnectionReportDto> findConnectionReports(Pageable pageable) {
-        return null;
+        return connectionReportRepository.findPendingConnectionReports(pageable);
     }
 }
