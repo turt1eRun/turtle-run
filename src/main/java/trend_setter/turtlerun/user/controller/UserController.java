@@ -1,8 +1,11 @@
 package trend_setter.turtlerun.user.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,8 +16,8 @@ import trend_setter.turtlerun.user.dto.RegisterUserRequest;
 import trend_setter.turtlerun.user.service.UserService;
 
 @RestController
-@RequestMapping("/api/users")
 @RequiredArgsConstructor
+@RequestMapping("/api/users")
 public class UserController {
 
     private final UserService userService;
@@ -25,8 +28,14 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponse> login(@RequestBody @Validated LoginRequest loginRequest) {
-        LoginResponse response = userService.login(loginRequest);
-        return ResponseEntity.ok(response);
+    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
+        LoginResponse Loginresponse = userService.login(loginRequest, response);
+        return ResponseEntity.ok(Loginresponse);
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<String> logout(HttpServletResponse httpServletResponse) {
+        userService.logout(httpServletResponse);
+        return ResponseEntity.ok("로그아웃 성공");
     }
 }
