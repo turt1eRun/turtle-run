@@ -39,11 +39,11 @@ public class Content extends BaseEntity {
     private User creator;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "video_id")
+    @JoinColumn(name = "video_id", nullable = false)
     private VideoFile video;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "thumbnail_id")
+    @JoinColumn(name = "thumbnail_id", nullable = false)
     private ThumbnailFile thumbnail;
 
     @OneToMany(mappedBy = "content", cascade = CascadeType.ALL)
