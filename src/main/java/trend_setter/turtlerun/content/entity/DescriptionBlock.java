@@ -13,8 +13,10 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import trend_setter.turtlerun.content.constant.BlockType;
 import trend_setter.turtlerun.content.dto.CreateBlockRequest;
 
@@ -28,6 +30,7 @@ public class DescriptionBlock {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Setter
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "content_id", nullable = false)
     private Content content;
@@ -57,4 +60,13 @@ public class DescriptionBlock {
         this.orderNum = request.orderNum();
         this.content = content;
     }
+
+    @Builder(builderMethodName = "testBuilder")
+    private DescriptionBlock(String text, int orderNum, Content content, BlockType type) {
+        this.text = text;
+        this.orderNum = orderNum;
+        this.content = content;
+        this.type = type;
+    }
+
 }

@@ -15,6 +15,7 @@ import jakarta.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import trend_setter.turtlerun.content.dto.CreateContentRequest;
@@ -56,8 +57,23 @@ public class Content extends BaseEntity {
         this.creator = user;
         this.video = new VideoFile(request.videoFileId());
         this.thumbnail = new ThumbnailFile(request.thumbnailFileId());
-        this.descriptionBlocks = request.createBlockRequests().stream().map
-            (blockRequest -> blockRequest.toEntity(this)).toList();
+        this.descriptionBlocks = request.createBlockRequests()
+            .stream()
+            .map(blockRequest -> blockRequest.toEntity(this))
+            .toList();
     }
 
+    @Builder(builderMethodName = "testBuilder")
+    private Content(String title, User creator, VideoFile video, ThumbnailFile thumbnail,
+        List<DescriptionBlock> descriptionBlocks, long views) {
+        this.title = title;
+        this.creator = creator;
+        this.video = video;
+        this.thumbnail = thumbnail;
+        this.views = views;
+    }
+    public void addDescriptionBlock(DescriptionBlock block) {
+        descriptionBlocks.add(block);
+        block.setContent(this);
+    }
 }
