@@ -14,7 +14,8 @@ import trend_setter.turtlerun.global.error.exception.ContentException;
  * @param descFileId 이미지 블록일 경우 파일 식별자
  * @param orderNum   블록 순서
  */
-public record CreateBlockRequest(String text, Long descFileId, @NotNull @Positive Integer orderNum) {
+public record CreateBlockRequest(String text, Long descFileId,
+                                 @NotNull @Positive Integer orderNum) {
 
     public CreateBlockRequest {
         boolean hasText = text != null && !text.isBlank();
@@ -27,6 +28,7 @@ public record CreateBlockRequest(String text, Long descFileId, @NotNull @Positiv
             throw new ContentException(ContentErrorCode.BLOCK_CONTENT_REQUIRED);
         }
     }
+
     public DescriptionBlock toEntity(Content content) {
         return new DescriptionBlock(this, content);
     }

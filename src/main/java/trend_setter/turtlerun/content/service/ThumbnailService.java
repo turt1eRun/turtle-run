@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import trend_setter.turtlerun.content.constant.ContentDirectory;
-import trend_setter.turtlerun.content.dto.GetFileUploadResponse;
+import trend_setter.turtlerun.content.dto.GetFileResponse;
 import trend_setter.turtlerun.content.entity.ThumbnailFile;
 import trend_setter.turtlerun.content.repository.ThumbnailFileRepository;
 import trend_setter.turtlerun.global.infra.s3.service.ImageValidator;
@@ -21,7 +21,7 @@ public class ThumbnailService {
     private final ThumbnailFileRepository thumbnailFileRepository;
 
     @Transactional
-    public GetFileUploadResponse uploadThumbnail(MultipartFile file) {
+    public GetFileResponse uploadThumbnail(MultipartFile file) {
         imageValidator.validateThumbnail(file);
         String fileName = S3KeyGenerator.createFileName();
         String filePath = S3KeyGenerator.createFilePath(ContentDirectory.THUMBNAIL, fileName);
@@ -29,6 +29,6 @@ public class ThumbnailService {
 
         ThumbnailFile thumbnailFile = thumbnailFileRepository.save(
             new ThumbnailFile(fileName, filePath));
-        return GetFileUploadResponse.from(thumbnailFile);
+        return GetFileResponse.from(thumbnailFile);
     }
 }

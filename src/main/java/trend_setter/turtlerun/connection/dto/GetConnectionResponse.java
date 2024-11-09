@@ -18,7 +18,7 @@ public record GetConnectionResponse(
     public static GetConnectionResponse from(Connection connection) {
         return new GetConnectionResponse(
             connection.getId(),
-            connection.getParent().getId(),
+            connection.getParent() == null ? null : connection.getParent().getId(),
             connection.getReplies().stream().map(GetConnectionResponse::from).toList(),
             connection.getWriter().getNickname(),
             connection.getConnectionType(),
