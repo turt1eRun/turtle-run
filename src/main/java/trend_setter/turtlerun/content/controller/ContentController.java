@@ -60,7 +60,7 @@ public class ContentController {
     @GetMapping
     public Page<GetContentListResponse> getContents(
         @RequestParam(required = false) String keyword, Pageable pageable) {
-        return contentService.findContents(keyword, pageable);
+        return contentService.getContents(keyword, pageable);
     }
 
     @GetMapping("/{contentId}")
