@@ -2,15 +2,22 @@ package trend_setter.turtlerun.content.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import trend_setter.turtlerun.content.dto.CreateContentRequest;
+import trend_setter.turtlerun.content.dto.GetContentListResponse;
+import trend_setter.turtlerun.content.dto.GetContentResponse;
 import trend_setter.turtlerun.content.dto.GetFileResponse;
 import trend_setter.turtlerun.content.service.ContentService;
 import trend_setter.turtlerun.content.service.DescriptionService;
@@ -43,10 +50,21 @@ public class ContentController {
     }
 
     @PostMapping
-    public void createContent(
+    public GetContentResponse createContent(
         @AuthenticationPrincipal UserDetails user,
         @RequestBody @Valid CreateContentRequest request
     ) {
-        contentService.createContent(user, request);
+        return contentService.createContent(user, request);
+    }
+
+    @GetMapping
+    public Page<GetContentListResponse> getContents(
+        @RequestParam(required = false) String keyword, Pageable pageable) {
+        return contentService.findContents(keyword, pageable);
+    }
+
+    @GetMapping("/{contentId}")
+    public GetContentResponse getContent(@PathVariable Long contentId) {
+        return contentService.getContent(contentId);
     }
 }
