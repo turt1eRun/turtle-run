@@ -12,10 +12,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
+import org.springframework.stereotype.Repository;
 import trend_setter.turtlerun.content.dto.GetContentListResponse;
 import trend_setter.turtlerun.content.dto.QGetContentListResponse;
 import trend_setter.turtlerun.content.entity.QContent;
 
+@Repository
 @RequiredArgsConstructor
 public class ContentRepositoryCustomImpl implements ContentRepositoryCustom {
 
@@ -24,14 +26,21 @@ public class ContentRepositoryCustomImpl implements ContentRepositoryCustom {
 
     @Override
     public Page<GetContentListResponse> findContentsByKeyword(String keyword, Pageable pageable) {
+
         List<GetContentListResponse> contents = queryFactory
             .select(new QGetContentListResponse(
-                content.id, content.title, content.creator.nickname,
-                content.views, content.video.duration, content.createdAt
+                content.id,
+                content.title,
+                content.creator.nickname,
+                content.views,
+                content.video.duration,
+                content.thumbnail,
+                content.createdAt
             ))
             .from(content)
             .join(content.creator)
             .join(content.video)
+            .join(content.thumbnail)
             .where(searchCondition(keyword))
             .orderBy(content.createdAt.desc())
             .offset(pageable.getOffset())
@@ -54,12 +63,10 @@ public class ContentRepositoryCustomImpl implements ContentRepositoryCustom {
                     JPAExpressions
                         .selectOne()
                         .from(descriptionBlock)
-                        .where(
-                            descriptionBlock.content.eq(content)
-                                .and(descriptionBlock.text.contains(keyword))
-                        )
-                        .exists())
-            : null;
+                        .where(descriptionBlock.content.eq(content)
+                            .and(descriptionBlock.text.contains(keyword)))
+                        .exists()
+                ) : null;
     }
 
 }
