@@ -1,10 +1,14 @@
 package trend_setter.turtlerun.content.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import trend_setter.turtlerun.content.dto.CreateContentRequest;
+import trend_setter.turtlerun.content.dto.GetContentListResponse;
+import trend_setter.turtlerun.content.dto.GetContentResponse;
 import trend_setter.turtlerun.content.entity.Content;
 import trend_setter.turtlerun.content.repository.ContentRepository;
 import trend_setter.turtlerun.content.repository.DescriptionFileRepository;
@@ -26,12 +30,23 @@ public class ContentService {
     private final DescriptionFileRepository descriptionFileRepository;
 
     @Transactional
-    public void createContent(UserDetails userDetails, CreateContentRequest request) {
+    public GetContentResponse createContent(UserDetails userDetails, CreateContentRequest request) {
         validateUserAuthority(userDetails);
         validateRequest(request);
         User creator = findUser(userDetails);
-        Content content = request.toEntity(creator);
-        contentRepository.save(content);
+        Content content = contentRepository.save(request.toEntity(creator));
+
+        return GetContentResponse.from(content);
+    }
+
+    @Transactional(readOnly = true)
+    public GetContentResponse getContent(Long contentId) {
+        return GetContentResponse.from(getOneContentWithAllRelations(contentId));
+    }
+
+    @Transactional(readOnly = true)
+    public Page<GetContentListResponse> getContents(String keyword, Pageable pageable) {
+        return contentRepository.findContentsByKeyword(keyword, pageable);
     }
 
     private void validateUserAuthority(UserDetails userDetails) {
@@ -57,6 +72,11 @@ public class ContentService {
     private User findUser(UserDetails userDetails) {
         return userRepository.findByEmail(userDetails.getUsername())
             .orElseThrow(RuntimeException::new);
+    }
+
+    private Content getOneContentWithAllRelations(Long contentId) {
+        return contentRepository.findByIdWithAllRelations(contentId)
+            .orElseThrow(() -> new ContentException(ContentErrorCode.CONTENT_NOT_FOUND));
     }
 }
 
