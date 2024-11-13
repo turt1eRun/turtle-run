@@ -51,4 +51,12 @@ public class User extends BaseEntity {
         this.isEmailVerified = true;
         this.role = Role.TURTLE;
     }
+
+    public void changeNickname(String newNickname) {
+        this.nickname = newNickname;
+    }
+
+    public void changePassword(String newPassword) {
+        this.password = newPassword;
+    }
 }

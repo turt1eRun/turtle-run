@@ -1,5 +1,6 @@
 package trend_setter.turtlerun.user.service;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -11,6 +12,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import trend_setter.turtlerun.user.dto.ChangeNicknameRequest;
+import trend_setter.turtlerun.user.dto.ChangePasswordRequest;
 import trend_setter.turtlerun.user.dto.LoginRequest;
 import trend_setter.turtlerun.user.dto.LoginResponse;
 import trend_setter.turtlerun.user.dto.MemberEmailVerifiedResponse;
@@ -93,5 +96,50 @@ public class UserService {
         httpServletResponse.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
         httpServletResponse.setHeader("Pragma", "no-cache");
         httpServletResponse.setHeader("Expires", "0");
+    }
+
+    private User getAuthenticatedMember(HttpServletRequest request) {
+        String token = tokenValidator.extractTokenFromHeader(request);
+        return tokenValidator.validateTokenAndGetUser(token);
+    }
+
+    @Transactional
+    public void changeNickname(HttpServletRequest httpServletRequest, ChangeNicknameRequest changeNicknameRequest) {
+        User user = getAuthenticatedMember(httpServletRequest);
+
+        String nickname = changeNicknameRequest.getNickname();
+
+        boolean exist = userRepository.existsByNickname(nickname);
+
+        if(exist) {
+            throw new BadCredentialsException("이미 존재하는 닉네임입니다.");
+        }
+
+        if(user.getNickname().equals(nickname)) {
+            throw new BadCredentialsException("기존 닉네임과 동일합니다.");
+        }
+
+        user.changeNickname(nickname);
+        userRepository.save(user);
+    }
+
+    @Transactional
+    public void changePassword(HttpServletRequest httpServletRequest, ChangePasswordRequest changePasswordRequest) {
+        User user = getAuthenticatedMember(httpServletRequest);
+
+        String nowPassword = changePasswordRequest.getNowPassword();
+        String newPassword = changePasswordRequest.getNewPassword();
+
+        if(!passwordEncoder.matches(nowPassword, user.getPassword())) {
+            throw new BadCredentialsException("현재 비밀번호가 틀렸습니다.");
+        }
+
+        if(passwordEncoder.matches(newPassword, user.getPassword())) {
+            throw new BadCredentialsException("현재 비밀번호와 동일합니다.");
+        }
+
+        String encodedPassword = passwordEncoder.encode(newPassword);
+        user.changePassword(encodedPassword);
+        userRepository.save(user);
     }
 }
