@@ -67,7 +67,6 @@ public class TokenValidator {
         return userDetailsService.loadUserByUsername(username);
     }
 
-    // 4
     public String extractAccessTokenFromResponseHeader(HttpServletResponse httpServletResponse) {
         String authorizationHeader = httpServletResponse.getHeader("Authorization");
 
@@ -83,5 +82,9 @@ public class TokenValidator {
             return getUserFromToken(token);
         }
         throw new UsernameNotFoundException("no");
+    }
+
+    public String extractUsernameFromToken(String token) {
+        return extractClaimsFromToken(token).getSubject();
     }
 }

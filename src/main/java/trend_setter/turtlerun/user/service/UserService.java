@@ -1,6 +1,5 @@
 package trend_setter.turtlerun.user.service;
 
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,7 +13,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import trend_setter.turtlerun.user.dto.LoginRequest;
 import trend_setter.turtlerun.user.dto.LoginResponse;
+import trend_setter.turtlerun.user.dto.MemberEmailVerifiedResponse;
 import trend_setter.turtlerun.user.dto.RegisterUserRequest;
+import trend_setter.turtlerun.user.dto.UserResponseDto;
 import trend_setter.turtlerun.user.entity.User;
 import trend_setter.turtlerun.user.jwt.TokenProvider;
 import trend_setter.turtlerun.user.jwt.TokenValidator;
@@ -31,12 +32,32 @@ public class UserService {
     private final AuthenticationManager authenticationManager;
     private final CookieService cookieService;
     private final TokenValidator tokenValidator;
+    private final MailService mailService;
 
     @Transactional
-    public void registerUser(RegisterUserRequest registerUserRequest) {
+    public UserResponseDto registerUser(RegisterUserRequest registerUserRequest) {
         String encodedPassword = passwordEncoder.encode(registerUserRequest.getPassword());
         User user = RegisterUserRequest.toEntity(registerUserRequest, encodedPassword);
+        User saveUser = userRepository.save(user);
+
+        String token = mailService.generateEmailToken(user.getEmail());
+        mailService.sendVerificationEmail(user.getEmail(), token);
+
+        return UserResponseDto.toDto(saveUser);
+    }
+
+    @Transactional
+    public MemberEmailVerifiedResponse verifyEmail(String token) {
+        String email = tokenValidator.extractUsernameFromToken(token);
+        User user = userRepository.findByEmail(email).orElseThrow();
+
+        if(user.isEmailVerified()) {
+            throw new BadCredentialsException("Email already verified");
+        }
+
+        user.updateEmailVerified();
         userRepository.save(user);
+        return MemberEmailVerifiedResponse.builder().email(user.getEmail()).build();
     }
 
     @Transactional

@@ -20,6 +20,10 @@ public class JwtUtils {
     @Value("${jwt.refresh-token.expiration-time}")
     private Long refreshTokenExpirationTime;
 
+    @Getter
+    @Value("${jwt.email-verification-token.expiration-time}")
+    private Long emailVerificationTokenExpirationTime;
+
     public Key createSigningKey() {
         byte[] decodedKeyBytes = Decoders.BASE64.decode(secretKey); // Base64로 인코딩된 비밀키를 바이트 배열로 디코딩한다.
         Key signingKey = Keys.hmacShaKeyFor(decodedKeyBytes); // 디코딩된 바이트 배열을 사용하여 HMAC 서명 키를 생성한다.

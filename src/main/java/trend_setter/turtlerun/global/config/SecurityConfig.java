@@ -30,7 +30,7 @@ public class SecurityConfig {
             .requestMatchers("/", "/api/users/login", "/api/users/logout", "/api/content-reports/**", "/api/connection-reports/**"
             , "/api/report-histories/**", "/api/report-reasons/**", "/api/ai/**", "/api/contents/**"
             , "/api/connections/**", "/api/comments/**", "/api/questions/**", "/api/subscriptions/**"
-            , "/api/likes/**", "/api/faqs/**", "/api/notifications/**")
+            , "/api/likes/**", "/api/faqs/**", "/api/notifications/**", "/api/users/verify-email")
             .permitAll()
 
             // 비회원 공개 엔드포인트: 사용자 등록 API

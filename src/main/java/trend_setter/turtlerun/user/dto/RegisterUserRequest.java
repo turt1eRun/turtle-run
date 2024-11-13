@@ -18,12 +18,16 @@ public class RegisterUserRequest {
     @NotBlank
     private String nickname;
 
+    @NotBlank
+    private boolean isEmailVerified;
+
     public static User toEntity(RegisterUserRequest request, String encodedPassword) {
     return User.builder()
         .email(request.email)
         .password(encodedPassword)
         .nickname(request.nickname)
-        .role(Role.TURTLE)
+        .role(Role.WAIT)
+        .isEmailVerified(false)
         .build();
     }
 }
