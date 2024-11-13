@@ -1,5 +1,6 @@
 package trend_setter.turtlerun.user.jwt;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -25,7 +26,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final CookieService cookieService;
     private final JwtAuthenticationService jwtAuthenticationService;
 
-    private static final List<String> PUBLIC_PATHS = Arrays.asList("/api/users/login", "/api/users/register");
+    private static final List<String> PUBLIC_PATHS = Arrays.asList("/api/users/login", "/api/users/register", "/api/users/verify-email");
 
     protected void doFilterInternal(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, FilterChain filterChain) throws ServletException, IOException {
         String accessToken = tokenValidator.extractTokenFromHeader(httpServletRequest);
@@ -35,7 +36,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         boolean tokenRefreshed = false;
 
         if(accessToken != null) {
-            authentication = jwtAuthenticationService.authenticateWithAccessToken(accessToken, httpServletRequest);
+            try {
+                authentication = jwtAuthenticationService.authenticateWithAccessToken(accessToken, httpServletRequest);
+            } catch (ExpiredJwtException e) {
+                accessToken = null;  // 만료된 토큰을 null로 설정
+            }
         }
 
         if(authentication == null && refreshToken != null) {

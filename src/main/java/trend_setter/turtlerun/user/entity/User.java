@@ -44,4 +44,11 @@ public class User extends BaseEntity {
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Role role;
+
+    private boolean isEmailVerified;
+
+    public void updateEmailVerified() {
+        this.isEmailVerified = true;
+        this.role = Role.TURTLE;
+    }
 }

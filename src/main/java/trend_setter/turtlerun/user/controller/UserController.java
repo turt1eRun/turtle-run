@@ -1,17 +1,17 @@
 package trend_setter.turtlerun.user.controller;
 
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import trend_setter.turtlerun.user.dto.LoginRequest;
 import trend_setter.turtlerun.user.dto.LoginResponse;
+import trend_setter.turtlerun.user.dto.MemberEmailVerifiedResponse;
 import trend_setter.turtlerun.user.dto.RegisterUserRequest;
 import trend_setter.turtlerun.user.service.UserService;
 
@@ -37,5 +37,11 @@ public class UserController {
     public ResponseEntity<String> logout(HttpServletResponse httpServletResponse) {
         userService.logout(httpServletResponse);
         return ResponseEntity.ok("로그아웃 성공");
+    }
+
+    @GetMapping("/verify-email")
+    public MemberEmailVerifiedResponse verifyEmail(@RequestParam String token) {
+        MemberEmailVerifiedResponse memberEmailVerifiedResponse = userService.verifyEmail(token);
+        return memberEmailVerifiedResponse;
     }
 }
