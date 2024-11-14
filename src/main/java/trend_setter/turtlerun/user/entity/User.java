@@ -24,6 +24,7 @@ import trend_setter.turtlerun.user.constant.Role;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
 public class User extends BaseEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
@@ -38,18 +39,35 @@ public class User extends BaseEntity {
     @Column(nullable = false, unique = true, length = 15)
     private String nickname;
 
-    private LocalDateTime deletedAt;
-    private LocalDateTime rabbitRoleRevocationAt;
-
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Role role;
 
     private boolean isEmailVerified;
+    private LocalDateTime deletedAt;
+    private int suspensionCount;
+    private LocalDateTime suspendedAt;
+    private boolean isPermanentlySuspended;
 
-    public void updateEmailVerified() {
+    public void emailVerificationComplete() {
         this.isEmailVerified = true;
         this.role = Role.TURTLE;
+    }
+
+    public void setDeletedAt() {
+        this.deletedAt = LocalDateTime.now();
+    }
+
+    public void increaseSuspensionCount() {
+        this.suspensionCount++;
+    }
+
+    public void setSuspendedAt() {
+        this.suspendedAt = LocalDateTime.now();
+    }
+
+    public void setPermanentlySuspended() {
+        this.isPermanentlySuspended = true;
     }
 
     public void changeNickname(String newNickname) {

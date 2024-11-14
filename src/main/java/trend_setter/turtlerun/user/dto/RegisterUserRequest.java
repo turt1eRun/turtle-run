@@ -9,6 +9,7 @@ import trend_setter.turtlerun.user.entity.User;
 @Getter
 @Builder
 public class RegisterUserRequest {
+
     @NotBlank
     private String email;
 
