@@ -58,7 +58,7 @@ public class UserService {
             throw new BadCredentialsException("Email already verified");
         }
 
-        user.updateEmailVerified();
+        user.emailVerificationComplete();
         userRepository.save(user);
         return MemberEmailVerifiedResponse.builder().email(user.getEmail()).build();
     }
