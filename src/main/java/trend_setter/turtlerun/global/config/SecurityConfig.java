@@ -13,6 +13,7 @@ import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import trend_setter.turtlerun.user.constant.Role;
 import trend_setter.turtlerun.user.jwt.JwtAuthenticationFilter;
 
 @Configuration
@@ -27,8 +28,7 @@ public class SecurityConfig {
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
             .authorizeHttpRequests(auth -> auth
             // 비회원 공개 엔드포인트: 루트 URL, 사용자 로그인 API
-            .requestMatchers("/", "/api/users/login", "/api/users/logout", "/api/content-reports/**", "/api/connection-reports/**"
-            , "/api/report-histories/**", "/api/report-reasons/**", "/api/ai/**", "/api/contents/**"
+            .requestMatchers("/", "/api/users/login", "/api/users/logout", "/api/ai/**", "/api/contents/**"
             , "/api/connections/**", "/api/comments/**", "/api/questions/**", "/api/subscriptions/**"
             , "/api/likes/**", "/api/faqs/**", "/api/notifications/**", "/api/users/verify-email")
             .permitAll()
@@ -36,6 +36,19 @@ public class SecurityConfig {
             // 비회원 공개 엔드포인트: 사용자 등록 API
             .requestMatchers(HttpMethod.POST, "/api/users/register")
             .permitAll()
+
+            // 회원 전용
+            .requestMatchers("/api/users/change-nickname", "/api/users/change-password").hasAnyAuthority(Role.TURTLE.name(), Role.RABBIT.name())
+            .requestMatchers(HttpMethod.POST, "/api/content-reports").hasAnyAuthority(Role.TURTLE.name(), Role.RABBIT.name())
+            .requestMatchers(HttpMethod.POST, "/api/connection-reports").hasAnyAuthority(Role.TURTLE.name(), Role.RABBIT.name())
+
+            // 관리자 전용
+            .requestMatchers(HttpMethod.GET, "/api/content-reports").hasAnyAuthority(Role.ADMIN.name())
+            .requestMatchers(HttpMethod.POST, "/api/content-reports/**").hasAnyAuthority(Role.ADMIN.name())
+            .requestMatchers(HttpMethod.GET, "/api/connection-reports").hasAnyAuthority(Role.ADMIN.name())
+            .requestMatchers(HttpMethod.POST, "/api/connection-reports/**").hasAnyAuthority(Role.ADMIN.name())
+            .requestMatchers("/api/report-histories", "/api/report-reasons/**").hasAnyAuthority(Role.ADMIN.name())
+
 
             // 이 외 모든 요청은 인증을 받아야한다.
             .anyRequest()
