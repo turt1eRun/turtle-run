@@ -60,4 +60,10 @@ public class UserController {
         userService.changePassword(httpServletRequest, changePasswordRequest);
         return ResponseEntity.ok("비밀번호 변경 성공");
     }
+
+    @PostMapping("/delete")
+    public ResponseEntity<String> deleteAccount() {
+        userService.deleteAccount();
+        return ResponseEntity.ok("회원 탈퇴 신청이 완료되었습니다.");
+    }
 }

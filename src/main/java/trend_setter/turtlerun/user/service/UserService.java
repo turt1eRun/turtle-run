@@ -142,4 +142,13 @@ public class UserService {
         user.changePassword(encodedPassword);
         userRepository.save(user);
     }
+
+    @Transactional
+    public void deleteAccount() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+        User user = userRepository.findByEmail(email).orElseThrow();
+        user.deleteAccount();
+        userRepository.save(user);
+    }
 }

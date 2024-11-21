@@ -38,7 +38,7 @@ public class SecurityConfig {
             .permitAll()
 
             // 회원 전용
-            .requestMatchers("/api/users/change-nickname", "/api/users/change-password").hasAnyAuthority(Role.TURTLE.name(), Role.RABBIT.name())
+            .requestMatchers("/api/users/change-nickname", "/api/users/change-password", "/api/users/delete").hasAnyAuthority(Role.TURTLE.name(), Role.RABBIT.name())
             .requestMatchers(HttpMethod.POST, "/api/content-reports").hasAnyAuthority(Role.TURTLE.name(), Role.RABBIT.name())
             .requestMatchers(HttpMethod.POST, "/api/connection-reports").hasAnyAuthority(Role.TURTLE.name(), Role.RABBIT.name())
 
