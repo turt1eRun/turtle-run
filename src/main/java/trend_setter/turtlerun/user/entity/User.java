@@ -82,4 +82,9 @@ public class User extends BaseEntity {
         this.deletedAt = LocalDateTime.now();
         this.role = Role.DELETE;
     }
+
+    public void cancelDeleteAccount() {
+        this.deletedAt = null;
+        this.role = Role.TURTLE;
+    }
 }
