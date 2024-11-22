@@ -148,7 +148,18 @@ public class UserService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName();
         User user = userRepository.findByEmail(email).orElseThrow();
+
         user.deleteAccount();
+        userRepository.save(user);
+    }
+
+    @Transactional
+    public void cancelDeleteAccount() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+        User user = userRepository.findByEmail(email).orElseThrow();
+
+        user.cancelDeleteAccount();
         userRepository.save(user);
     }
 }

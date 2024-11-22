@@ -66,4 +66,10 @@ public class UserController {
         userService.deleteAccount();
         return ResponseEntity.ok("회원 탈퇴 신청이 완료되었습니다.");
     }
+
+    @PostMapping("/cancel")
+    public ResponseEntity<String> cancelAccount() {
+        userService.cancelDeleteAccount();
+        return ResponseEntity.ok("회원 탈퇴가 취소되었습니다.");
+    }
 }
