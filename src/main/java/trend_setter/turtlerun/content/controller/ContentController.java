@@ -9,6 +9,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -19,6 +20,7 @@ import trend_setter.turtlerun.content.dto.CreateContentRequest;
 import trend_setter.turtlerun.content.dto.GetContentListResponse;
 import trend_setter.turtlerun.content.dto.GetContentResponse;
 import trend_setter.turtlerun.content.dto.GetFileResponse;
+import trend_setter.turtlerun.content.dto.ModifyContentRequest;
 import trend_setter.turtlerun.content.service.ContentService;
 import trend_setter.turtlerun.content.service.DescriptionService;
 import trend_setter.turtlerun.content.service.ThumbnailService;
@@ -66,5 +68,13 @@ public class ContentController {
     @GetMapping("/{contentId}")
     public GetContentResponse getContent(@PathVariable Long contentId) {
         return contentService.getContent(contentId);
+    }
+
+    @PutMapping("/{contentId}")
+    public GetContentResponse modifyContent(
+        @PathVariable Long contentId,
+        @AuthenticationPrincipal UserDetails user,
+        @RequestBody @Valid ModifyContentRequest request) {
+        return contentService.modifyContent(contentId, request);
     }
 }
