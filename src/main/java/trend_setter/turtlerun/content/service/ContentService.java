@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import trend_setter.turtlerun.content.dto.CreateContentRequest;
 import trend_setter.turtlerun.content.dto.GetContentListResponse;
 import trend_setter.turtlerun.content.dto.GetContentResponse;
+import trend_setter.turtlerun.content.dto.ModifyContentRequest;
 import trend_setter.turtlerun.content.entity.Content;
 import trend_setter.turtlerun.content.repository.ContentRepository;
 import trend_setter.turtlerun.content.repository.DescriptionFileRepository;
@@ -49,6 +50,13 @@ public class ContentService {
         return contentRepository.findContentsByKeyword(keyword, pageable);
     }
 
+    @Transactional
+    public GetContentResponse modifyContent(Long contentId, ModifyContentRequest request) {
+        Content content = getOneContentWithAllRelations(contentId);
+        content.modifyContentInfo(request);
+        return GetContentResponse.from(content);
+    }
+
     private void validateUserAuthority(UserDetails userDetails) {
         if (!userDetails.getAuthorities().contains("ROLE_RABBIT")) {
             throw new ContentException(ContentErrorCode.UNAUTHORIZED_CREATOR);
@@ -62,7 +70,7 @@ public class ContentService {
         thumbnailFileRepository.findById(request.thumbnailFileId())
             .orElseThrow(() -> new ContentException(ContentErrorCode.THUMBNAIL_FILE_NOT_FOUND));
 
-        request.createBlockRequests().stream()
+        request.blockRequests().stream()
             .filter(blockRequest -> blockRequest.descFileId() != null)
             .forEach(blockRequest ->
                 descriptionFileRepository.findById(blockRequest.descFileId()).orElseThrow(
