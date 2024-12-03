@@ -16,19 +16,19 @@ import trend_setter.turtlerun.user.entity.User;
  * @param title               컨텐츠 제목
  * @param videoFileId         업로드된 비디오 파일 식별자
  * @param thumbnailFileId     업로드된 썸네일 파일 식별자
- * @param createBlockRequests 설명 블록 목록
+ * @param blockRequests 설명 블록 목록
  */
 public record CreateContentRequest(@NotBlank String title, @NotNull Long videoFileId,
                                    @NotNull Long thumbnailFileId,
-                                   @NotEmpty @Valid List<CreateBlockRequest> createBlockRequests) {
+                                   @NotEmpty @Valid List<BlockRequest> blockRequests) {
 
     public CreateContentRequest {
-        validateBlockOrder(createBlockRequests);
+        validateBlockOrder(blockRequests);
     }
 
-    private void validateBlockOrder(List<CreateBlockRequest> requests) {
+    private void validateBlockOrder(List<BlockRequest> requests) {
         long distinctCount = requests.stream()
-            .map(CreateBlockRequest::orderNum).distinct().count();
+            .map(BlockRequest::orderNum).distinct().count();
 
         if (distinctCount != requests.size()) {
             throw new ContentException(ContentErrorCode.DUPLICATE_BLOCK_ORDER);
