@@ -14,10 +14,10 @@ import trend_setter.turtlerun.global.error.exception.ContentException;
  * @param descFileId 이미지 블록일 경우 파일 식별자
  * @param orderNum   블록 순서
  */
-public record CreateBlockRequest(String text, Long descFileId,
+public record BlockRequest(String text, Long descFileId,
                                  @NotNull @Positive Integer orderNum) {
 
-    public CreateBlockRequest {
+    public BlockRequest {
         boolean hasText = text != null && !text.isBlank();
         boolean hasFile = descFileId != null;
 
