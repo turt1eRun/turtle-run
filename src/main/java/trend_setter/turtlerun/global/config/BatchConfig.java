@@ -33,6 +33,7 @@ public class BatchConfig {
     private final S3ImageUploader s3ImageUploader;
     private final DescriptionFileRepository descriptionFileRepository;
     private final PlatformTransactionManager platformTransactionManager;
+    public static final int EXPIRATION_HOURS = 24;
 
     @Bean
     public Job deleteS3descriptionFileJob() {
@@ -59,7 +60,7 @@ public class BatchConfig {
             .repository(descriptionFileRepository)
             .methodName("findByDeletedAtBefore")
             .pageSize(100)
-            .arguments(List.of(LocalDateTime.now().minusHours(24)))
+            .arguments(List.of(LocalDateTime.now().minusHours(EXPIRATION_HOURS)))
             .sorts(Map.of("id", Sort.Direction.ASC))
             .build();
     }
