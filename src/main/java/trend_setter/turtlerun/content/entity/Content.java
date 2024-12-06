@@ -18,7 +18,10 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import trend_setter.turtlerun.content.constant.BlockType;
+import trend_setter.turtlerun.content.dto.BlockRequest;
 import trend_setter.turtlerun.content.dto.CreateContentRequest;
+import trend_setter.turtlerun.content.dto.ModifyContentRequest;
 import trend_setter.turtlerun.global.common.BaseEntity;
 import trend_setter.turtlerun.user.entity.User;
 
@@ -47,7 +50,7 @@ public class Content extends BaseEntity {
     @JoinColumn(name = "thumbnail_id", nullable = false)
     private ThumbnailFile thumbnail;
 
-    @OneToMany(mappedBy = "content", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "content", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<DescriptionBlock> descriptionBlocks = new ArrayList<>();
 
     private long views;
@@ -57,9 +60,35 @@ public class Content extends BaseEntity {
         this.creator = user;
         this.video = new VideoFile(request.videoFileId());
         this.thumbnail = new ThumbnailFile(request.thumbnailFileId());
-        this.descriptionBlocks = request.createBlockRequests()
+        this.descriptionBlocks = request.blockRequests()
             .stream()
             .map(blockRequest -> blockRequest.toEntity(this))
+            .toList();
+    }
+
+    public void addDescriptionBlock(DescriptionBlock block) {
+        descriptionBlocks.add(block);
+        block.setContent(this);
+    }
+
+    public void modifyContentInfo(ModifyContentRequest request) {
+        this.title = request.title();
+        //재사용되는 파일 id 찾기
+        List<Long> reusedImageFileIds = request.blockRequests()
+            .stream().filter(req -> req.text() == null)
+            .map(BlockRequest::descFileId)
+            .toList();
+        //이미지 파일 soft delete
+        this.descriptionBlocks.stream()
+            .filter(block -> block.getType().equals(BlockType.IMAGE))
+            .filter(block -> !reusedImageFileIds.contains(block.getId()))
+            .forEach(block -> block.getDescriptionFile().delete());
+        //연관관계 제거
+        this.descriptionBlocks.clear();
+        //변경내용 적용
+        this.descriptionBlocks = request.blockRequests()
+            .stream()
+            .map(modifyBlockRequest -> modifyBlockRequest.toEntity(this))
             .toList();
     }
 
@@ -71,9 +100,5 @@ public class Content extends BaseEntity {
         this.video = video;
         this.thumbnail = thumbnail;
         this.views = views;
-    }
-    public void addDescriptionBlock(DescriptionBlock block) {
-        descriptionBlocks.add(block);
-        block.setContent(this);
     }
 }

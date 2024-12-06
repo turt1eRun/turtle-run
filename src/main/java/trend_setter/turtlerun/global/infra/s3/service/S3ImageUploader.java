@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.model.S3Exception;
 import trend_setter.turtlerun.global.error.code.FileErrorCode;
@@ -33,6 +34,18 @@ public class S3ImageUploader {
             s3Client.putObject(request,
                 RequestBody.fromInputStream(file.getInputStream(), file.getSize()));
         } catch (IOException | S3Exception e) {
+            throw new FileException(FileErrorCode.FILE_UPLOAD_ERROR);
+        }
+    }
+
+    public void delete(String filePath) {
+        try {
+            DeleteObjectRequest request = DeleteObjectRequest.builder()
+                .bucket(bucket)
+                .key(filePath).build();
+
+            s3Client.deleteObject(request);
+        } catch (Exception e) {
             throw new FileException(FileErrorCode.FILE_UPLOAD_ERROR);
         }
     }

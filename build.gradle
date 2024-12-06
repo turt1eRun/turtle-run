@@ -47,6 +47,10 @@ dependencies {
     implementation 'org.jcodec:jcodec-javase:0.2.5'
     implementation 'org.springframework.boot:spring-boot-starter-mail:3.2.5'
 
+    //SpringBatch
+    implementation 'org.springframework.boot:spring-boot-starter-batch'
+    testImplementation 'org.springframework.batch:spring-batch-test'
+
     //Querydsl
     implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
     annotationProcessor "com.querydsl:querydsl-apt:5.0.0:jakarta"

@@ -18,7 +18,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import trend_setter.turtlerun.content.constant.BlockType;
-import trend_setter.turtlerun.content.dto.CreateBlockRequest;
+import trend_setter.turtlerun.content.dto.BlockRequest;
 
 @Entity
 @Getter
@@ -48,7 +48,7 @@ public class DescriptionBlock {
 
     private int orderNum;
 
-    public DescriptionBlock(CreateBlockRequest request, Content content) {
+    public DescriptionBlock(BlockRequest request, Content content) {
         if(request.text()!=null){
             this.type = BlockType.TEXT;
             this.text = request.text();
