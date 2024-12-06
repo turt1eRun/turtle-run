@@ -8,6 +8,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -36,5 +37,12 @@ public class DescriptionFile {
 
     public DescriptionFile(Long id) {
         this.id = id;
+    }
+
+    @Builder(builderMethodName = "testBuilder")
+    public DescriptionFile(String fileName, String filePath, LocalDateTime deletedAt) {
+        this.fileName = fileName;
+        this.filePath = filePath;
+        this.deletedAt = deletedAt;
     }
 }
