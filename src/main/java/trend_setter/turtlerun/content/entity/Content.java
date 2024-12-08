@@ -18,11 +18,14 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.security.core.userdetails.UserDetails;
 import trend_setter.turtlerun.content.constant.BlockType;
 import trend_setter.turtlerun.content.dto.BlockRequest;
 import trend_setter.turtlerun.content.dto.CreateContentRequest;
 import trend_setter.turtlerun.content.dto.ModifyContentRequest;
 import trend_setter.turtlerun.global.common.BaseEntity;
+import trend_setter.turtlerun.global.error.code.ContentErrorCode;
+import trend_setter.turtlerun.global.error.exception.ContentException;
 import trend_setter.turtlerun.user.entity.User;
 
 @Entity
@@ -69,6 +72,12 @@ public class Content extends BaseEntity {
     public void addDescriptionBlock(DescriptionBlock block) {
         descriptionBlocks.add(block);
         block.setContent(this);
+    }
+
+    public void validateCreatorPermission(UserDetails user) {
+        if (this.creator.getEmail().equals(user.getUsername())){
+            throw new ContentException(ContentErrorCode.UNAUTHORIZED_PERMISSION);
+        }
     }
 
     public void modifyContentInfo(ModifyContentRequest request) {
