@@ -51,8 +51,9 @@ public class ContentService {
     }
 
     @Transactional
-    public GetContentResponse modifyContent(Long contentId, ModifyContentRequest request) {
+    public GetContentResponse modifyContent(Long contentId, ModifyContentRequest request, UserDetails user) {
         Content content = getOneContentWithAllRelations(contentId);
+        content.validateCreatorPermission(user);
         content.modifyContentInfo(request);
         return GetContentResponse.from(content);
     }
