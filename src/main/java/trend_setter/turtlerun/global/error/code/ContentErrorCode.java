@@ -20,7 +20,8 @@ public enum ContentErrorCode implements ErrorCode {
     THUMBNAIL_FILE_NOT_FOUND(404, "C010", "Thumbnail file not found"),
     //descriptionFile
     DESCRIPTION_FILE_NOT_FOUND(404, "C011", "Description file not found"),
-    CONTENT_NOT_FOUND(404, "C012", "Content not found");
+    CONTENT_NOT_FOUND(404, "C012", "Content not found"),
+    UNAUTHORIZED_PERMISSION(403, "C013", "Unauthorized to access content");
 
 
     private final int status;
