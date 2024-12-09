@@ -92,13 +92,22 @@ public class Content extends BaseEntity {
             .filter(block -> block.getType().equals(BlockType.IMAGE))
             .filter(block -> !reusedImageFileIds.contains(block.getId()))
             .forEach(block -> block.getDescriptionFile().delete());
-        //연관관계 제거
+        //연관관계 제거(orphanRemoval 동작)
         this.descriptionBlocks.clear();
         //변경내용 적용
         this.descriptionBlocks = request.blockRequests()
             .stream()
             .map(modifyBlockRequest -> modifyBlockRequest.toEntity(this))
             .toList();
+    }
+
+    //s3 관련 데이터들만 soft delete, 나머지 데이터는 hard delete
+    public void deleteContent() {
+        this.video.delete();
+        this.thumbnail.delete();
+        this.descriptionBlocks.stream()
+            .filter(block -> block.getType().equals(BlockType.IMAGE))
+            .forEach(DescriptionBlock::delete);
     }
 
     @Builder(builderMethodName = "testBuilder")

@@ -61,6 +61,12 @@ public class DescriptionBlock {
         this.content = content;
     }
 
+    public void delete(){
+        if(this.descriptionFile!=null){
+            this.descriptionFile.delete();
+        }
+    }
+
     @Builder(builderMethodName = "testBuilder")
     private DescriptionBlock(String text, int orderNum, Content content, BlockType type) {
         this.text = text;
