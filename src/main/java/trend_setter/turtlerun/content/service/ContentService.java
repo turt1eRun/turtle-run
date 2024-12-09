@@ -58,6 +58,14 @@ public class ContentService {
         return GetContentResponse.from(content);
     }
 
+    @Transactional
+    public void deleteContent(Long contentId, UserDetails user) {
+        Content content = getOneContentWithAllRelations(contentId);
+        content.validateCreatorPermission(user);
+        content.deleteContent();
+        contentRepository.delete(content);
+    }
+
     private void validateUserAuthority(UserDetails userDetails) {
         if (!userDetails.getAuthorities().contains("ROLE_RABBIT")) {
             throw new ContentException(ContentErrorCode.UNAUTHORIZED_CREATOR);
