@@ -87,4 +87,14 @@ public class User extends BaseEntity {
         this.deletedAt = null;
         this.role = Role.TURTLE;
     }
+
+    public boolean isDeleteScheduled() {
+        if(this.deletedAt == null) {
+            return false;
+        }
+
+        LocalDateTime compareTime = this.deletedAt.plusDays(7);
+        LocalDateTime now = LocalDateTime.now().toLocalDate().atStartOfDay();
+        return now.isAfter(compareTime.toLocalDate().atStartOfDay());
+    }
 }
