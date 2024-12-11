@@ -2,8 +2,10 @@ package trend_setter.turtlerun.user.service;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -161,5 +163,19 @@ public class UserService {
 
         user.cancelDeleteAccount();
         userRepository.save(user);
+    }
+
+    @Scheduled(cron = "0 0 0 * * *")
+    @Transactional
+    public void deleteInactiveAccounts() {
+        LocalDateTime day = LocalDateTime.now().minusDays(7).toLocalDate().atStartOfDay();
+
+        userRepository.findAllByDeletedAtBefore(day).forEach(
+            user -> {
+                if(user.isDeleteScheduled()) {
+                    userRepository.delete(user);
+                }
+            }
+        );
     }
 }
