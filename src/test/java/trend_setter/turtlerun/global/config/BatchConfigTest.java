@@ -3,7 +3,9 @@ package trend_setter.turtlerun.global.config;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import java.time.LocalDateTime;
@@ -25,6 +27,7 @@ import trend_setter.turtlerun.content.entity.VideoFile;
 import trend_setter.turtlerun.content.repository.DescriptionFileRepository;
 import trend_setter.turtlerun.content.repository.ThumbnailFileRepository;
 import trend_setter.turtlerun.content.repository.VideoFileRepository;
+import trend_setter.turtlerun.global.error.exception.FileException;
 import trend_setter.turtlerun.global.infra.s3.service.S3ImageUploader;
 
 @ActiveProfiles("test")
@@ -61,7 +64,8 @@ class BatchConfigTest {
     @Test
     void 만료된_파일은_삭제되어야_한다() throws Exception {
         //given
-        LocalDateTime expiredTime = LocalDateTime.now().minusHours(BatchConfig.EXPIRATION_HOURS + 1);
+        LocalDateTime expiredTime = LocalDateTime.now()
+            .minusHours(BatchConfig.EXPIRATION_HOURS + 1);
         DescriptionFile expiredFile = createDescriptionFile(expiredTime, "expired");
         descriptionFileRepository.save(expiredFile);
 
@@ -91,7 +95,7 @@ class BatchConfigTest {
     }
 
     @Test
-    void 경계값의_파일은_삭제되지_않아야_한다()throws Exception {
+    void 경계값의_파일은_삭제되지_않아야_한다() throws Exception {
         //given
         LocalDateTime boundaryTime = LocalDateTime.now().minusHours(BatchConfig.EXPIRATION_HOURS);
         ThumbnailFile boundaryFile = createThumbnailFile(boundaryTime, "boundary");
@@ -106,6 +110,38 @@ class BatchConfigTest {
         assertTrue(thumbnailFileRepository.existsById(boundaryFile.getId()));
     }
 
+    @Test
+    void S3_삭제_실패시_DB는_삭제되어선_안된다() throws Exception {
+        //given
+        LocalDateTime expiredTime = LocalDateTime.now()
+            .minusHours(BatchConfig.EXPIRATION_HOURS + 1);
+        VideoFile expiredFile = createVideoFile(expiredTime, "expired");
+        videoFileRepository.save(expiredFile);
+        doThrow(FileException.class).when(s3ImageUploader).delete(expiredFile.getFilePath());
+
+        //when
+        JobExecution jobExecution = jobLauncherTestUtils.launchJob();
+
+        //then
+        verify(s3ImageUploader).delete(expiredFile.getFilePath());
+        assertEquals(ExitStatus.COMPLETED, jobExecution.getExitStatus());
+        assertTrue(videoFileRepository.existsById(expiredFile.getId()));
+    }
+
+    @Test
+    void deletedAt_이_null_인_파일은_삭제되어선_안된다() throws Exception {
+        //given
+        ThumbnailFile thumbnailFile = createThumbnailFile(null, "null");
+        thumbnailFileRepository.save(thumbnailFile);
+
+        //when
+        JobExecution jobExecution = jobLauncherTestUtils.launchJob();
+
+        //then
+        verify(s3ImageUploader, never()).delete(thumbnailFile.getFilePath());
+        assertEquals(ExitStatus.COMPLETED, jobExecution.getExitStatus());
+        assertTrue(thumbnailFileRepository.existsById(thumbnailFile.getId()));
+    }
 
     private DescriptionFile createDescriptionFile(LocalDateTime deletedAt, String filePath) {
         return DescriptionFile.testBuilder()
