@@ -22,10 +22,10 @@ public class FileDeleteScheduler {
     private final JobLauncher jobLauncher;
     private final JobRegistry jobRegistry;
 
-    private static final String JOB_NAME = "descriptionFileDeleteJob";
+    private static final String JOB_NAME = "deleteS3FileJob";
 
-    @Scheduled(cron = "0 0 0 * * *")
-    public void deleteDescriptionImage() {
+    @Scheduled(cron = "0 0 0 * * SUN")
+    public void deleteExpiredFiles() {
         try {
             jobLauncher.run(jobRegistry.getJob(JOB_NAME), createJobParameters());
         } catch (NoSuchJobException e) {

@@ -18,11 +18,14 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.security.core.userdetails.UserDetails;
 import trend_setter.turtlerun.content.constant.BlockType;
 import trend_setter.turtlerun.content.dto.BlockRequest;
 import trend_setter.turtlerun.content.dto.CreateContentRequest;
 import trend_setter.turtlerun.content.dto.ModifyContentRequest;
 import trend_setter.turtlerun.global.common.BaseEntity;
+import trend_setter.turtlerun.global.error.code.ContentErrorCode;
+import trend_setter.turtlerun.global.error.exception.ContentException;
 import trend_setter.turtlerun.user.entity.User;
 
 @Entity
@@ -71,6 +74,12 @@ public class Content extends BaseEntity {
         block.setContent(this);
     }
 
+    public void validateCreatorPermission(UserDetails user) {
+        if (this.creator.getEmail().equals(user.getUsername())){
+            throw new ContentException(ContentErrorCode.UNAUTHORIZED_PERMISSION);
+        }
+    }
+
     public void modifyContentInfo(ModifyContentRequest request) {
         this.title = request.title();
         //재사용되는 파일 id 찾기
@@ -83,13 +92,22 @@ public class Content extends BaseEntity {
             .filter(block -> block.getType().equals(BlockType.IMAGE))
             .filter(block -> !reusedImageFileIds.contains(block.getId()))
             .forEach(block -> block.getDescriptionFile().delete());
-        //연관관계 제거
+        //연관관계 제거(orphanRemoval 동작)
         this.descriptionBlocks.clear();
         //변경내용 적용
         this.descriptionBlocks = request.blockRequests()
             .stream()
             .map(modifyBlockRequest -> modifyBlockRequest.toEntity(this))
             .toList();
+    }
+
+    //s3 관련 데이터들만 soft delete, 나머지 데이터는 hard delete
+    public void deleteContent() {
+        this.video.delete();
+        this.thumbnail.delete();
+        this.descriptionBlocks.stream()
+            .filter(block -> block.getType().equals(BlockType.IMAGE))
+            .forEach(DescriptionBlock::delete);
     }
 
     @Builder(builderMethodName = "testBuilder")

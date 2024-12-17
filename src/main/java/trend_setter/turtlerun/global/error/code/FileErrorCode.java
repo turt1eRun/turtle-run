@@ -13,7 +13,8 @@ public enum FileErrorCode implements ErrorCode {
     VIDEO_DURATION_EXTRACT_ERROR(400, "F005", "failed to extract video duration"),
     FAILED_TO_ABORT(400, "F006", "failed to abort"),
     INVALID_THUMBNAIL_FORMAT(400, "F007", "invalid thumbnail format"),
-    INVALID_DESCRIPTION_IMAGE_FORMAT(400, "F008", "invalid description image format");
+    INVALID_DESCRIPTION_IMAGE_FORMAT(400, "F008", "invalid description image format"),
+    FILE_DELETE_ERROR(400, "F009", "failed to delete file");
     private final int status;
     private final String code;
     private final String message;

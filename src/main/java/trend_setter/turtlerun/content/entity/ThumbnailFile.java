@@ -11,12 +11,13 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import trend_setter.turtlerun.global.infra.s3.entity.S3Deletable;
 
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "thumbnail_files")
-public class ThumbnailFile {
+public class ThumbnailFile implements S3Deletable {
 
     @Id @Column(name = "thumbnail_file_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,10 +31,16 @@ public class ThumbnailFile {
         this.deletedAt = LocalDateTime.now();
     }
 
-    @Builder(builderMethodName = "testBuilder")
     public ThumbnailFile(String fileName, String filePath) {
         this.fileName = fileName;
         this.filePath = filePath;
+    }
+
+    @Builder(builderMethodName = "testBuilder")
+    private ThumbnailFile(String fileName, String filePath, LocalDateTime deletedAt) {
+        this.fileName = fileName;
+        this.filePath = filePath;
+        this.deletedAt = deletedAt;
     }
 
     public ThumbnailFile(Long id) {
