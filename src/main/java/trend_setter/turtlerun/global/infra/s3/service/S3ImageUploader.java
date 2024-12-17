@@ -46,7 +46,7 @@ public class S3ImageUploader {
 
             s3Client.deleteObject(request);
         } catch (Exception e) {
-            throw new FileException(FileErrorCode.FILE_UPLOAD_ERROR);
+            throw new FileException(FileErrorCode.FILE_DELETE_ERROR);
         }
     }
 }
