@@ -25,7 +25,7 @@ import trend_setter.turtlerun.content.repository.ThumbnailFileRepository;
 import trend_setter.turtlerun.content.repository.VideoFileRepository;
 import trend_setter.turtlerun.global.error.exception.FileException;
 import trend_setter.turtlerun.global.infra.s3.entity.S3Deletable;
-import trend_setter.turtlerun.global.infra.s3.service.S3ImageUploader;
+import trend_setter.turtlerun.global.infra.s3.service.S3SimpleUploader;
 
 @Slf4j
 @Configuration
@@ -33,7 +33,7 @@ import trend_setter.turtlerun.global.infra.s3.service.S3ImageUploader;
 public class BatchConfig {
 
     private final JobRepository jobRepository;
-    private final S3ImageUploader s3ImageUploader;
+    private final S3SimpleUploader s3SimpleUploader;
     private final DescriptionFileRepository descriptionFileRepository;
     private final VideoFileRepository videoFileRepository;
     private final ThumbnailFileRepository thumbnailFileRepository;
@@ -81,7 +81,7 @@ public class BatchConfig {
     private  <T extends S3Deletable> ItemProcessor<T, T> createProcessor() {
         return file -> {
             try {
-                s3ImageUploader.delete(file.getFilePath());
+                s3SimpleUploader.delete(file.getFilePath());
                 return file;
             } catch (FileException e) {
                 log.error("Failed to delete S3 file {}", file.getFilePath(), e);

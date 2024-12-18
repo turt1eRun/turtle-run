@@ -1,7 +1,6 @@
 package trend_setter.turtlerun.global.infra.s3.service;
 
 import java.io.IOException;
-import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -16,7 +15,7 @@ import trend_setter.turtlerun.global.error.exception.FileException;
 
 @Service
 @RequiredArgsConstructor
-public class S3ImageUploader {
+public class S3SimpleUploader {
 
     private final S3Client s3Client;
 

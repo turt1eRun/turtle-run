@@ -23,6 +23,7 @@ import trend_setter.turtlerun.content.constant.BlockType;
 import trend_setter.turtlerun.content.dto.BlockRequest;
 import trend_setter.turtlerun.content.dto.CreateContentRequest;
 import trend_setter.turtlerun.content.dto.ModifyContentRequest;
+import trend_setter.turtlerun.content.dto.ModifyContentVideoRequest;
 import trend_setter.turtlerun.global.common.BaseEntity;
 import trend_setter.turtlerun.global.error.code.ContentErrorCode;
 import trend_setter.turtlerun.global.error.exception.ContentException;
@@ -108,6 +109,11 @@ public class Content extends BaseEntity {
         this.descriptionBlocks.stream()
             .filter(block -> block.getType().equals(BlockType.IMAGE))
             .forEach(DescriptionBlock::delete);
+    }
+
+    public void modifyContentVideo(ModifyContentVideoRequest request) {
+        this.video.delete();
+        this.video = new VideoFile(request.videoFileId());
     }
 
     @Builder(builderMethodName = "testBuilder")

@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import java.time.LocalDateTime;
@@ -28,7 +27,7 @@ import trend_setter.turtlerun.content.repository.DescriptionFileRepository;
 import trend_setter.turtlerun.content.repository.ThumbnailFileRepository;
 import trend_setter.turtlerun.content.repository.VideoFileRepository;
 import trend_setter.turtlerun.global.error.exception.FileException;
-import trend_setter.turtlerun.global.infra.s3.service.S3ImageUploader;
+import trend_setter.turtlerun.global.infra.s3.service.S3SimpleUploader;
 
 @ActiveProfiles("test")
 @SpringBatchTest
@@ -45,7 +44,7 @@ class BatchConfigTest {
     private DescriptionFileRepository descriptionFileRepository;
 
     @MockBean
-    private S3ImageUploader s3ImageUploader;
+    private S3SimpleUploader s3SimpleUploader;
 
     @Autowired
     private Job deleteS3FileJob;
@@ -74,7 +73,7 @@ class BatchConfigTest {
 
         //then
         assertEquals(ExitStatus.COMPLETED, jobExecution.getExitStatus());
-        verify(s3ImageUploader).delete(expiredFile.getFilePath());
+        verify(s3SimpleUploader).delete(expiredFile.getFilePath());
         assertFalse(descriptionFileRepository.existsById(expiredFile.getId()));
     }
 
@@ -90,7 +89,7 @@ class BatchConfigTest {
 
         //then
         assertEquals(ExitStatus.COMPLETED, jobExecution.getExitStatus());
-        verify(s3ImageUploader, never()).delete(validFile.getFilePath());
+        verify(s3SimpleUploader, never()).delete(validFile.getFilePath());
         assertTrue(videoFileRepository.existsById(validFile.getId()));
     }
 
@@ -106,7 +105,7 @@ class BatchConfigTest {
 
         //then
         assertEquals(ExitStatus.COMPLETED, jobExecution.getExitStatus());
-        verify(s3ImageUploader, never()).delete(boundaryFile.getFilePath());
+        verify(s3SimpleUploader, never()).delete(boundaryFile.getFilePath());
         assertTrue(thumbnailFileRepository.existsById(boundaryFile.getId()));
     }
 
@@ -117,13 +116,13 @@ class BatchConfigTest {
             .minusHours(BatchConfig.EXPIRATION_HOURS + 1);
         VideoFile expiredFile = createVideoFile(expiredTime, "expired");
         videoFileRepository.save(expiredFile);
-        doThrow(FileException.class).when(s3ImageUploader).delete(expiredFile.getFilePath());
+        doThrow(FileException.class).when(s3SimpleUploader).delete(expiredFile.getFilePath());
 
         //when
         JobExecution jobExecution = jobLauncherTestUtils.launchJob();
 
         //then
-        verify(s3ImageUploader).delete(expiredFile.getFilePath());
+        verify(s3SimpleUploader).delete(expiredFile.getFilePath());
         assertEquals(ExitStatus.COMPLETED, jobExecution.getExitStatus());
         assertTrue(videoFileRepository.existsById(expiredFile.getId()));
     }
@@ -138,7 +137,7 @@ class BatchConfigTest {
         JobExecution jobExecution = jobLauncherTestUtils.launchJob();
 
         //then
-        verify(s3ImageUploader, never()).delete(thumbnailFile.getFilePath());
+        verify(s3SimpleUploader, never()).delete(thumbnailFile.getFilePath());
         assertEquals(ExitStatus.COMPLETED, jobExecution.getExitStatus());
         assertTrue(thumbnailFileRepository.existsById(thumbnailFile.getId()));
     }

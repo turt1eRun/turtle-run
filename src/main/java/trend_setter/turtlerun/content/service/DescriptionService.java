@@ -9,14 +9,14 @@ import trend_setter.turtlerun.content.dto.GetFileResponse;
 import trend_setter.turtlerun.content.entity.DescriptionFile;
 import trend_setter.turtlerun.content.repository.DescriptionFileRepository;
 import trend_setter.turtlerun.global.infra.s3.service.ImageValidator;
-import trend_setter.turtlerun.global.infra.s3.service.S3ImageUploader;
+import trend_setter.turtlerun.global.infra.s3.service.S3SimpleUploader;
 import trend_setter.turtlerun.global.infra.s3.util.S3KeyGenerator;
 
 @Service
 @RequiredArgsConstructor
 public class DescriptionService {
 
-    private final S3ImageUploader s3ImageUploader;
+    private final S3SimpleUploader s3SimpleUploader;
     private final ImageValidator imageValidator;
     private final DescriptionFileRepository descriptionFileRepository;
 
@@ -25,7 +25,7 @@ public class DescriptionService {
         imageValidator.validateDescriptionImage(file);
         String fileName = S3KeyGenerator.createFileName();
         String filePath = S3KeyGenerator.createFilePath(ContentDirectory.DESCRIPTION, fileName);
-        s3ImageUploader.upload(file, filePath);
+        s3SimpleUploader.upload(file, filePath);
 
         DescriptionFile descriptionFile = descriptionFileRepository.save(
             new DescriptionFile(fileName, filePath));

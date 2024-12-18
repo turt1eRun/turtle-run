@@ -10,7 +10,9 @@ import trend_setter.turtlerun.content.dto.CreateContentRequest;
 import trend_setter.turtlerun.content.dto.GetContentListResponse;
 import trend_setter.turtlerun.content.dto.GetContentResponse;
 import trend_setter.turtlerun.content.dto.ModifyContentRequest;
+import trend_setter.turtlerun.content.dto.ModifyContentVideoRequest;
 import trend_setter.turtlerun.content.entity.Content;
+import trend_setter.turtlerun.content.entity.VideoFile;
 import trend_setter.turtlerun.content.repository.ContentRepository;
 import trend_setter.turtlerun.content.repository.DescriptionFileRepository;
 import trend_setter.turtlerun.content.repository.ThumbnailFileRepository;
@@ -36,7 +38,6 @@ public class ContentService {
         validateRequest(request);
         User creator = findUser(userDetails);
         Content content = contentRepository.save(request.toEntity(creator));
-
         return GetContentResponse.from(content);
     }
 
@@ -51,10 +52,21 @@ public class ContentService {
     }
 
     @Transactional
-    public GetContentResponse modifyContent(Long contentId, ModifyContentRequest request, UserDetails user) {
+    public GetContentResponse modifyContent(Long contentId, ModifyContentRequest request,
+        UserDetails user) {
         Content content = getOneContentWithAllRelations(contentId);
         content.validateCreatorPermission(user);
         content.modifyContentInfo(request);
+        return GetContentResponse.from(content);
+    }
+
+    @Transactional
+    public GetContentResponse modifyContentVideo(Long contentId, ModifyContentVideoRequest request,
+        UserDetails user) {
+        Content content = getOneContentWithAllRelations(contentId);
+        content.validateCreatorPermission(user);
+        validateVideoFile(request.videoFileId());
+        content.modifyContentVideo(request);
         return GetContentResponse.from(content);
     }
 
@@ -73,17 +85,27 @@ public class ContentService {
     }
 
     private void validateRequest(CreateContentRequest request) {
-        videoFileRepository.findById(request.videoFileId())
-            .orElseThrow(() -> new ContentException(ContentErrorCode.VIDEO_FILE_NOT_FOUND));
-
-        thumbnailFileRepository.findById(request.thumbnailFileId())
-            .orElseThrow(() -> new ContentException(ContentErrorCode.THUMBNAIL_FILE_NOT_FOUND));
-
+        validateVideoFile(request.videoFileId());
+        validateThumbnailFile(request.thumbnailFileId());
         request.blockRequests().stream()
             .filter(blockRequest -> blockRequest.descFileId() != null)
             .forEach(blockRequest ->
-                descriptionFileRepository.findById(blockRequest.descFileId()).orElseThrow(
-                    () -> new ContentException(ContentErrorCode.DESCRIPTION_FILE_NOT_FOUND)));
+                validateDescriptionFile(blockRequest.descFileId()));
+    }
+
+    private void validateDescriptionFile(Long descFileId) {
+        descriptionFileRepository.findById(descFileId).orElseThrow(
+            () -> new ContentException(ContentErrorCode.DESCRIPTION_FILE_NOT_FOUND));
+    }
+
+    private void validateThumbnailFile(Long thumbnailFileId) {
+        thumbnailFileRepository.findById(thumbnailFileId)
+            .orElseThrow(() -> new ContentException(ContentErrorCode.THUMBNAIL_FILE_NOT_FOUND));
+    }
+
+    private void validateVideoFile(Long videoFileId) {
+        videoFileRepository.findById(videoFileId)
+            .orElseThrow(() -> new ContentException(ContentErrorCode.VIDEO_FILE_NOT_FOUND));
     }
 
     private User findUser(UserDetails userDetails) {
@@ -95,6 +117,7 @@ public class ContentService {
         return contentRepository.findByIdWithAllRelations(contentId)
             .orElseThrow(() -> new ContentException(ContentErrorCode.CONTENT_NOT_FOUND));
     }
+
 }
 
 

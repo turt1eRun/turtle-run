@@ -9,14 +9,14 @@ import trend_setter.turtlerun.content.dto.GetFileResponse;
 import trend_setter.turtlerun.content.entity.ThumbnailFile;
 import trend_setter.turtlerun.content.repository.ThumbnailFileRepository;
 import trend_setter.turtlerun.global.infra.s3.service.ImageValidator;
-import trend_setter.turtlerun.global.infra.s3.service.S3ImageUploader;
+import trend_setter.turtlerun.global.infra.s3.service.S3SimpleUploader;
 import trend_setter.turtlerun.global.infra.s3.util.S3KeyGenerator;
 
 @Service
 @RequiredArgsConstructor
 public class ThumbnailService {
 
-    private final S3ImageUploader s3ImageUploader;
+    private final S3SimpleUploader s3SimpleUploader;
     private final ImageValidator imageValidator;
     private final ThumbnailFileRepository thumbnailFileRepository;
 
@@ -25,7 +25,7 @@ public class ThumbnailService {
         imageValidator.validateThumbnail(file);
         String fileName = S3KeyGenerator.createFileName();
         String filePath = S3KeyGenerator.createFilePath(ContentDirectory.THUMBNAIL, fileName);
-        s3ImageUploader.upload(file, filePath);
+        s3SimpleUploader.upload(file, filePath);
 
         ThumbnailFile thumbnailFile = thumbnailFileRepository.save(
             new ThumbnailFile(fileName, filePath));
