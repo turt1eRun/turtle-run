@@ -24,6 +24,7 @@ import trend_setter.turtlerun.content.dto.GetContentListResponse;
 import trend_setter.turtlerun.content.dto.GetContentResponse;
 import trend_setter.turtlerun.content.dto.GetFileResponse;
 import trend_setter.turtlerun.content.dto.ModifyContentRequest;
+import trend_setter.turtlerun.content.dto.ModifyContentVideoRequest;
 import trend_setter.turtlerun.content.service.ContentService;
 import trend_setter.turtlerun.content.service.DescriptionService;
 import trend_setter.turtlerun.content.service.ThumbnailService;
@@ -82,7 +83,12 @@ public class ContentController {
         return contentService.modifyContent(contentId, request, user);
     }
 
-    // Todo : 동영상 재업로드
+    @PutMapping("/{contentId}/video")
+    public GetContentResponse modifyContentVideo(@PathVariable Long contentId,
+        @RequestBody ModifyContentVideoRequest request,
+        @AuthenticationPrincipal UserDetails user) {
+        return contentService.modifyContentVideo(contentId, request, user);
+    }
 
     @DeleteMapping("/{contentId}")
     public ResponseEntity<HttpStatus> deleteContent(@PathVariable Long contentId,
