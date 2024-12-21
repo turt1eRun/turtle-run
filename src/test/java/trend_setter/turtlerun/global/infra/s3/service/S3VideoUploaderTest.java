@@ -56,7 +56,7 @@ class S3VideoUploaderTest {
         Map<String, String> metadata = Map.of("duration", "10");
 
         // When
-        s3VideoUploader.upload(file, key, metadata);
+        s3VideoUploader.upload(file, key);
 
         // Then
         verify(s3Client).putObject(any(PutObjectRequest.class), any(RequestBody.class));
@@ -70,8 +70,6 @@ class S3VideoUploaderTest {
             "video/mp4", new byte[6 * 1024 * 1024]
         );
         String key = "videos/test.mp4";
-        Map<String, String> metadata = Map.of("duration", "10");
-
         when(s3Client.createMultipartUpload(any(CreateMultipartUploadRequest.class)))
             .thenReturn(CreateMultipartUploadResponse.builder()
                 .uploadId("test-upload-id")
@@ -83,7 +81,7 @@ class S3VideoUploaderTest {
                 .build());
 
         // When
-        s3VideoUploader.upload(file, key, metadata);
+        s3VideoUploader.upload(file, key);
 
         // Then
         verify(s3Client).createMultipartUpload(any(CreateMultipartUploadRequest.class));
@@ -99,14 +97,13 @@ class S3VideoUploaderTest {
             "video/mp4", "test".getBytes()
         );
         String key = "videos/test.mp4";
-        Map<String, String> metadata = Map.of("duration", "10");
 
         when(s3Client.putObject(any(PutObjectRequest.class), any(RequestBody.class)))
             .thenThrow(S3Exception.builder().message("Upload failed").build());
 
         // When & Then
         assertThrows(FileException.class, () ->
-            s3VideoUploader.upload(file, key, metadata)
+            s3VideoUploader.upload(file, key)
         );
     }
 }
