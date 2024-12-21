@@ -76,7 +76,7 @@ public class Content extends BaseEntity {
     }
 
     public void validateCreatorPermission(UserDetails user) {
-        if (this.creator.getEmail().equals(user.getUsername())){
+        if (!this.creator.getEmail().equals(user.getUsername())){
             throw new ContentException(ContentErrorCode.UNAUTHORIZED_PERMISSION);
         }
     }
@@ -117,12 +117,13 @@ public class Content extends BaseEntity {
     }
 
     @Builder(builderMethodName = "testBuilder")
-    private Content(String title, User creator, VideoFile video, ThumbnailFile thumbnail,
+    public Content(String title, User creator, VideoFile video, ThumbnailFile thumbnail,
         List<DescriptionBlock> descriptionBlocks, long views) {
         this.title = title;
         this.creator = creator;
         this.video = video;
         this.thumbnail = thumbnail;
+        this.descriptionBlocks = descriptionBlocks;
         this.views = views;
     }
 }
