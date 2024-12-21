@@ -33,14 +33,14 @@ public class VideoService {
         videoValidator.validate(file);
         String fileName = S3KeyGenerator.createFileName();
         String filePath = S3KeyGenerator.createFilePath(ContentDirectory.VIDEO, fileName);
+        String originalFileName = file.getOriginalFilename();
+        s3VideoUploader.upload(file, filePath);
         int duration = extractDuration(file);
-        Map<String, String> metadata = Map.of("duration", String.valueOf(duration));
-        s3VideoUploader.upload(file, filePath, metadata);
-
-        VideoFile videoFile = videoFileRepository.save(new VideoFile(fileName, filePath, duration));
+        VideoFile videoFile = videoFileRepository.save(new VideoFile(fileName, originalFileName, filePath, duration));
 
         return GetFileResponse.from(videoFile);
     }
+
 
     private int extractDuration(MultipartFile file) {
         try {
