@@ -11,7 +11,7 @@ import {
 
 export default function Sidebar() {
   return (
-      <div className="w-60 h-screen px-4 bg-white">
+      <div className="w-60 px-4 bg-white">
         <div className="border-b pb-4">
           <div className="group flex pl-2 py-2 my-1 rounded-md hover:bg-emerald-100 cursor-pointer">
             <Play className="w-6 h-6 mr-4 text-gray-500 group-hover:text-emerald-500"/>
