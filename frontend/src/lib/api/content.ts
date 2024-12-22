@@ -24,7 +24,7 @@ export const uploadThumbnail = async (file: File) => {
 
 export const uploadBlockImage = async (file: File) => {
   const formData = new FormData();
-  formData.append('blockImage', file);
+  formData.append('block-image', file);
 
   const response = await fetch(`${API_BASE}/block-images`, {
     method: 'POST',
