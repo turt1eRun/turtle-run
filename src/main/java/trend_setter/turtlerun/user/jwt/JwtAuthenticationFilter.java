@@ -26,7 +26,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final CookieService cookieService;
     private final JwtAuthenticationService jwtAuthenticationService;
 
-    private static final List<String> PUBLIC_PATHS = Arrays.asList("/api/users/login", "/api/users/register", "/api/users/verify-email");
+    private static final List<String> PUBLIC_PATHS = Arrays.asList("/api/users/login", "/api/users/register", "/api/users/verify-email", "/api/contents/");
 
     protected void doFilterInternal(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, FilterChain filterChain) throws ServletException, IOException {
         String accessToken = tokenValidator.extractTokenFromHeader(httpServletRequest);
@@ -34,6 +34,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         Authentication authentication = null;
         boolean tokenRefreshed = false;
+
+//        String path = httpServletRequest.getRequestURI();
+//
+//        if (PUBLIC_PATHS.stream().anyMatch(path::startsWith)) {
+//            filterChain.doFilter(httpServletRequest, httpServletResponse);
+//            return;
+//        } // 테스트환경에서 사용
 
         if(accessToken != null) {
             try {
