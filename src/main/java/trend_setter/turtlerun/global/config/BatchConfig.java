@@ -51,8 +51,18 @@ public class BatchConfig {
             .build();
     }
 
+    @Bean
+    public Job deleteOrphanFileJob() {
+        return new JobBuilder("deleteOrphanFileJob", jobRepository)
+            .start(createOrphanDeleteStep("description", descriptionFileRepository))
+            .next(createOrphanDeleteStep("video", videoFileRepository))
+            .next(createOrphanDeleteStep("thumbnail", thumbnailFileRepository))
+            .build();
+    }
 
-    private  <T extends S3Deletable> Step createDeleteStep(String prefix, JpaRepository<T, Long> repository
+
+    private <T extends S3Deletable> Step createDeleteStep(String prefix,
+        JpaRepository<T, Long> repository
     ) {
         return new StepBuilder(prefix + "FileDeleteStep", jobRepository)
             .<T, T>chunk(100, platformTransactionManager)
@@ -62,8 +72,18 @@ public class BatchConfig {
             .build();
     }
 
+    private <T extends S3Deletable> Step createOrphanDeleteStep(String prefix,
+        JpaRepository<T, Long> repository) {
+        return new StepBuilder(prefix +  "OrphanDeleteStep", jobRepository)
+            .<T, T>chunk(100, platformTransactionManager)
+            .reader(createOrphanReader(prefix, repository))
+            .processor(createProcessor())
+            .writer(createWriter(repository))
+            .build();
+    }
 
-    private  <T extends S3Deletable> RepositoryItemReader<T> createReader(
+
+    private <T extends S3Deletable> RepositoryItemReader<T> createReader(
         String prefix,
         JpaRepository<T, Long> repository
     ) {
@@ -77,8 +97,22 @@ public class BatchConfig {
             .build();
     }
 
+    private <T extends S3Deletable> RepositoryItemReader<T> createOrphanReader(
+        String prefix,
+        JpaRepository<T, Long> repository
+    ) {
+        return new RepositoryItemReaderBuilder<T>()
+            .name(prefix + "OrphanFileReader")
+            .repository(repository)
+            .methodName("findOrphanFiles")
+            .pageSize(100)
+            .arguments(List.of(LocalDateTime.now().minusHours(EXPIRATION_HOURS)))
+            .sorts(Map.of("id", Direction.ASC))
+            .build();
+    }
 
-    private  <T extends S3Deletable> ItemProcessor<T, T> createProcessor() {
+
+    private <T extends S3Deletable> ItemProcessor<T, T> createProcessor() {
         return file -> {
             try {
                 s3SimpleUploader.delete(file.getFilePath());
@@ -91,7 +125,7 @@ public class BatchConfig {
     }
 
 
-    private  <T extends S3Deletable> RepositoryItemWriter<T> createWriter(
+    private <T extends S3Deletable> RepositoryItemWriter<T> createWriter(
         JpaRepository<T, Long> repository) {
         return new RepositoryItemWriterBuilder<T>()
             .repository(repository)

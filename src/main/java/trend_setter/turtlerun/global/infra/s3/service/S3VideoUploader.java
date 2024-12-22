@@ -1,10 +1,12 @@
 package trend_setter.turtlerun.global.infra.s3.service;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -21,6 +23,7 @@ import software.amazon.awssdk.services.s3.model.UploadPartRequest;
 import trend_setter.turtlerun.global.error.code.FileErrorCode;
 import trend_setter.turtlerun.global.error.exception.FileException;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class S3VideoUploader {
@@ -31,37 +34,44 @@ public class S3VideoUploader {
     @Value("${spring.cloud.aws.s3.bucket}")
     private String bucket;
 
-    public void upload(MultipartFile file, String filePath, Map<String, String> metadata) {
+    public void upload(MultipartFile file, String filePath) {
         try {
             if (file.getSize() > CHUNK_SIZE) {
-                multipartUpload(file, filePath, metadata);
+                log.info("Using multipart upload for file larger than {} bytes", CHUNK_SIZE);
+                multipartUpload(file, filePath);
             } else {
-                simpleUpload(file, filePath, metadata);
+                log.info("Using simple upload");
+                simpleUpload(file, filePath);
             }
-        } catch (IOException | S3Exception e) {
+        } catch (IOException e) {
+            log.error("IO error during upload: ", e);
+            throw new FileException(FileErrorCode.FILE_UPLOAD_ERROR);
+        } catch (S3Exception e) {
+            log.error("S3 error during upload: ", e);
+            throw new FileException(FileErrorCode.FILE_UPLOAD_ERROR);
+        } catch (Exception e) {
+            log.error("Unexpected error during upload: ", e);
             throw new FileException(FileErrorCode.FILE_UPLOAD_ERROR);
         }
     }
 
-    private void simpleUpload(MultipartFile file, String filePath, Map<String, String> metadata)
+    private void simpleUpload(MultipartFile file, String filePath)
         throws IOException {
         PutObjectRequest request = PutObjectRequest.builder()
             .bucket(bucket)
             .key(filePath)
             .contentType(file.getContentType())
-            .metadata(metadata)
             .build();
 
         s3Client.putObject(request,
             RequestBody.fromInputStream(file.getInputStream(), file.getSize()));
     }
 
-    protected void multipartUpload(MultipartFile file, String filePath,
-        Map<String, String> metadata) throws IOException {
+    protected void multipartUpload(MultipartFile file, String filePath) throws IOException {
         String uploadId = null;
         try {
             //멀티파트 업로드 시작
-            uploadId = initMultipartUpload(file, filePath, metadata);
+            uploadId = initMultipartUpload(file, filePath);
 
             //청크 단위 업로드
             List<CompletedPart> completedParts = uploadParts(file, filePath, uploadId);
@@ -76,13 +86,11 @@ public class S3VideoUploader {
         }
     }
 
-    protected String initMultipartUpload(MultipartFile file, String filePath,
-        Map<String, String> metadata) throws IOException {
+    protected String initMultipartUpload(MultipartFile file, String filePath) throws IOException {
         CreateMultipartUploadRequest createRequest = CreateMultipartUploadRequest.builder()
             .bucket(bucket)
             .key(filePath)
             .contentType(file.getContentType())
-            .metadata(metadata)
             .build();
 
         return s3Client.createMultipartUpload(createRequest).uploadId();
@@ -91,34 +99,33 @@ public class S3VideoUploader {
     protected List<CompletedPart> uploadParts(MultipartFile file, String filePath, String uploadId)
         throws IOException {
         List<CompletedPart> completedParts = new ArrayList<>();
-        byte[] bytes = file.getBytes();
+        try (InputStream inputStream = file.getInputStream()) {
+            byte[] buffer = new byte[CHUNK_SIZE];
+            int partNumber = 1;
+            int bytesRead;
 
-        int partNumber = 1;
-        int filePosition = 0;
+            while ((bytesRead = inputStream.read(buffer)) > 0) {
+                byte[] chunk =
+                    bytesRead < buffer.length ? Arrays.copyOf(buffer, bytesRead) : buffer;
 
-        while (filePosition < bytes.length) {
-            int partSize = Math.min(CHUNK_SIZE, bytes.length - filePosition);
-            byte[] buffer = new byte[partSize];
-            System.arraycopy(bytes, filePosition, buffer, 0, partSize);
-
-            UploadPartRequest uploadRequest = UploadPartRequest.builder()
-                .bucket(bucket)
-                .key(filePath)
-                .uploadId(uploadId)
-                .partNumber(partNumber)
-                .build();
-
-            String etag = s3Client.uploadPart(uploadRequest,
-                RequestBody.fromBytes(buffer)).eTag();
-
-            completedParts.add(
-                CompletedPart.builder()
+                UploadPartRequest uploadRequest = UploadPartRequest.builder()
+                    .bucket(bucket)
+                    .key(filePath)
+                    .uploadId(uploadId)
                     .partNumber(partNumber)
-                    .eTag(etag)
-                    .build());
+                    .build();
 
-            filePosition += partSize;
-            partNumber++;
+                String etag = s3Client.uploadPart(uploadRequest,
+                    RequestBody.fromBytes(chunk)).eTag();
+
+                completedParts.add(
+                    CompletedPart.builder()
+                        .partNumber(partNumber)
+                        .eTag(etag)
+                        .build());
+
+                partNumber++;
+            }
         }
 
         return completedParts;

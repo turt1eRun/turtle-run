@@ -22,18 +22,29 @@ public class FileDeleteScheduler {
     private final JobLauncher jobLauncher;
     private final JobRegistry jobRegistry;
 
-    private static final String JOB_NAME = "deleteS3FileJob";
+    private static final String DELETE_JOB = "deleteS3FileJob";
+    private static final String DELETE_ORPHAN_JOB = "deleteOrphanFileJob";
 
     @Scheduled(cron = "0 0 0 * * SUN")
     public void deleteExpiredFiles() {
+        executeJob(DELETE_JOB);
+    }
+
+    @Scheduled(cron = "0 0 1 * * *")
+    public void deleteOrphanFiles() {
+        executeJob(DELETE_ORPHAN_JOB);
+    }
+
+
+    private void executeJob(String deleteJob) {
         try {
-            jobLauncher.run(jobRegistry.getJob(JOB_NAME), createJobParameters());
+            jobLauncher.run(jobRegistry.getJob(deleteJob), createJobParameters());
         } catch (NoSuchJobException e) {
-            log.error("No such batch job found: {}", JOB_NAME, e);
+            log.error("No such batch job found: {}", deleteJob, e);
         } catch (JobInstanceAlreadyCompleteException e) {
-            log.info("Batch job already completed: {}", JOB_NAME);
+            log.info("Batch job already completed: {}", deleteJob);
         } catch (JobExecutionAlreadyRunningException e) {
-            log.info("Batch job already running: {}", JOB_NAME);
+            log.info("Batch job already running: {}", deleteJob);
         } catch (Exception e) {
             log.error("Unexpected error during batch job execution", e);
         }

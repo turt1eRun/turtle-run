@@ -9,18 +9,19 @@ import trend_setter.turtlerun.global.infra.s3.util.S3UriCreator;
  *
  * @param id        엔티티 연관관계를 위한 식별자
  * @param uploadUrl 파일 미리보기를 위한 S3 URL
+ * @param originalFileName 원본 파일 이름
  */
-public record GetFileResponse(Long id, String uploadUrl) {
+public record GetFileResponse(Long id, String uploadUrl, String originalFileName) {
 
     public static GetFileResponse from(VideoFile videoFile) {
-        return new GetFileResponse(videoFile.getId(), S3UriCreator.createUri(videoFile.getFilePath()));
+        return new GetFileResponse(videoFile.getId(), S3UriCreator.createUri(videoFile.getFilePath()), videoFile.getOriginalFileName());
     }
 
     public static GetFileResponse from(ThumbnailFile thumbnailFile) {
-        return new GetFileResponse(thumbnailFile.getId(), S3UriCreator.createUri(thumbnailFile.getFilePath()));
+        return new GetFileResponse(thumbnailFile.getId(), S3UriCreator.createUri(thumbnailFile.getFilePath()), thumbnailFile.getOriginalFileName());
     }
 
     public static GetFileResponse from(DescriptionFile descriptionFile) {
-        return new GetFileResponse(descriptionFile.getId(), S3UriCreator.createUri(descriptionFile.getFilePath()));
+        return new GetFileResponse(descriptionFile.getId(), S3UriCreator.createUri(descriptionFile.getFilePath()),descriptionFile.getOriginalFileName());
     }
 }
